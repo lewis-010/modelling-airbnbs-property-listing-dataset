@@ -1,2 +1,2 @@
-def prepare_image_data():
+def download_images():
     a
