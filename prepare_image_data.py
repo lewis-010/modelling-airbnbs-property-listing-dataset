@@ -2,7 +2,7 @@ import boto3
 import os
 
 # Set up the S3 client
-s3 = boto3.client('s3', aws_access_key_id='AKIAXKFMUG3C63ZJ344K', aws_secret_access_key='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', region_name='eu-west-2')
+s3 = boto3.client('s3')
 
 # List all the folders in the bucket
 response = s3.list_objects_v2(Bucket='aicore-airbnb-images')
