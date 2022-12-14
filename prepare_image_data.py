@@ -41,4 +41,26 @@ def resize_images():
                         if img.mode == 'RGB':
                             # Handle non-RGB images as needed
                             rgb_file_paths.append(file_path)
+    
+    # Find the height of the smallest PNG
+    min_height = float('inf')
+    for checked_file in rgb_file_paths:
+        with Image.open(checked_file) as im:
+            min_height = min(min_height, im.height)
+
+    # Iterate through the file paths, resize the images and save them
+    for file_path in rgb_file_paths:
+        with Image.open(file_path) as im:
+            # Calculate the new height, preserving the aspect ratio
+            width, height = im.size
+            new_height = min_height
+            new_width = int(width * new_height / height)
+
+            # Resize the image
+            resized_im = im.resize((new_width, new_height))
+
+            # Save the resized image to the processed_images directory
+            resized_im.save(os.path.join('processed_images', os.path.basename(file_path)))
+    
+
                         
