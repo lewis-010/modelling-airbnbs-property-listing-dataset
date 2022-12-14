@@ -61,6 +61,5 @@ def resize_images():
 
             # Save the resized image to the processed_images directory
             resized_im.save(os.path.join('processed_images', os.path.basename(file_path)))
-    
 
-                        
+resize_images()
