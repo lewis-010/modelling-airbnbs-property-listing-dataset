@@ -1,4 +1,6 @@
 import boto3
+import os
+from PIL import Image
 
 def download_images():
 # Set up the S3 client
@@ -20,4 +22,21 @@ def download_images():
         s3.download_file('aicore-airbnb-images', Key=folder, Filename=local_dir)
 
 def resize_images():
-    s
+    # Set the base directory where the subdirectories are located
+    base_folder = r'C:\Users\lcox1\Documents\VSCode\AiCore\Data science\images'
+
+    # Iterate through the subdirectories
+    for subdir in os.listdir(base_folder):
+        subdir_path = os.path.join(base_folder, subdir)
+        if os.path.isdir(subdir_path):
+            # Iterate through the files in the subdirectory
+            for f in os.listdir(subdir_path):
+                file_path = os.path.join(subdir_path, f)
+                if os.path.isfile(file_path):
+                    # Open the image and check its format
+                    with Image.open(file_path) as img:
+                        if img.mode != 'RGB':
+                            # Handle non-RGB images as needed
+                            os.remove(file_path)
+                        else:
+                            pass
