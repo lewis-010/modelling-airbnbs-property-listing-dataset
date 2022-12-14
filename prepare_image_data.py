@@ -21,13 +21,16 @@ def download_images():
     for folder in folders:
         s3.download_file('aicore-airbnb-images', Key=folder, Filename=local_dir)
 
+
 def resize_images():
     # Set the base directory where the subdirectories are located
-    base_folder = r'C:\Users\lcox1\Documents\VSCode\AiCore\Data science\images'
+    base_dir = r'C:\Users\lcox1\Documents\VSCode\AiCore\Data science\images'
+
+    rgb_file_paths = []
 
     # Iterate through the subdirectories
-    for subdir in os.listdir(base_folder):
-        subdir_path = os.path.join(base_folder, subdir)
+    for subdir in os.listdir(base_dir):
+        subdir_path = os.path.join(base_dir, subdir)
         if os.path.isdir(subdir_path):
             # Iterate through the files in the subdirectory
             for f in os.listdir(subdir_path):
@@ -35,8 +38,7 @@ def resize_images():
                 if os.path.isfile(file_path):
                     # Open the image and check its format
                     with Image.open(file_path) as img:
-                        if img.mode != 'RGB':
+                        if img.mode == 'RGB':
                             # Handle non-RGB images as needed
-                            os.remove(file_path)
-                        else:
-                            pass
+                            rgb_file_paths.append(file_path)
+                        
