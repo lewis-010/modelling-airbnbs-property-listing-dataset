@@ -19,7 +19,7 @@ def download_images():
 
     # Iterate through the folders and download them to the local directory
     for folder in folders:
-        s3.download_file('aicore-airbnb-images', Key=folder, Filename=local_dir)
+        s3.download_file('aicore-airbnb-project', Key=folder, Filename=local_dir)
 
 
 def resize_images():
