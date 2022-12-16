@@ -26,6 +26,9 @@ if __name__=='__main__':
 
 def load_airbnb(label):
     df = pd.read_csv('tabular_data/clean_tabular_data.csv')
-    features = df.drop(label, axis=1).values
-    labels = df.pop(label).values
+    df.drop(columns=['ID', 'Category', 'Title', 'Description', 'Amenities', 'Location', 'url'])
+    features = df.drop('Price_Night', axis=1).values
+    labels = df.pop('Price_Night').values
     return features, labels
+
+features, labels = load_airbnb('Price_Night')
