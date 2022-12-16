@@ -6,11 +6,11 @@ This project will focus on using [AirBnB's](https://www.airbnb.co.uk/) property 
 ## Milestone 1
 - The dataset (*AirBnBData.csv*) consists of 829 property listings and a variety of characteristics for each property. 
 - The characteristics are a mixture of text and numerical values.
-    - E.g., location, bedrooms, guests, ratings, price per night etc
+    - E.g., location, description, bedrooms, guests, ratings, price per night etc
 - The first task was to clean the dataset with the following steps:
     - Remove rows with missing ratings.
-    - Combine description strings into singular string and remove whitespace.
-    - Apply default feature values (1) for guests, beds, bathrooms and bedrooms for missing values.
+    - Combine description strings into singular string and remove whitespaces.
+    - Apply default feature values (1) for guests, beds, bathrooms and bedrooms if missing values.
 ```Python
 def remove_rows_with_missing_data():
      df.dropna(subset=['Description', 'Cleanliness_rating', 'Accuracy_rating', 'Communication_rating', 'Location_rating', 'Check-in_rating', 'Value_rating'], inplace=True)
