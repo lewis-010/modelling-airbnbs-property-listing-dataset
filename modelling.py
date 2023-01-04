@@ -1,7 +1,7 @@
 from tabular_data import *
 import sklearn
 
-load_airbnb('Price_Night')
+features, labels = load_airbnb('Price_Night')
 
 
 # Create an instance of the SGDRegressor class

@@ -24,11 +24,9 @@ if __name__=='__main__':
     df.to_csv('clean_tabular_data.csv')
 
 
-def load_airbnb(label):
+def load_airbnb():
     df = pd.read_csv('tabular_data/clean_tabular_data.csv')
-    df.drop(columns=['ID', 'Category', 'Title', 'Description', 'Amenities', 'Location', 'url'])
+    df.drop(columns=['ID', 'Category', 'Title', 'Description', 'Amenities', 'Location', 'url'], inplace=True)
     features = df.drop('Price_Night', axis=1).values
-    labels = df.pop('Price_Night').values
+    labels = df['Price_Night'].values
     return features, labels
-
-features, labels = load_airbnb('Price_Night')
