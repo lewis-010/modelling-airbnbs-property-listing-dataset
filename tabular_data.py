@@ -28,5 +28,5 @@ def load_airbnb():
     df = pd.read_csv('tabular_data/clean_tabular_data.csv')
     df.drop(columns=['ID', 'Category', 'Title', 'Description', 'Amenities', 'Location', 'url'], inplace=True)
     features = df.drop('Price_Night', axis=1).values
-    labels = df['Price_Night'].values
-    return features, labels
+    label = df['Price_Night'].values
+    return features, label

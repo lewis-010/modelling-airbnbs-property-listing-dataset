@@ -1,15 +1,21 @@
 from tabular_data import *
-import sklearn
-
-features, labels = load_airbnb('Price_Night')
-
-
-# Create an instance of the SGDRegressor class
-sgd_regressor = SGDRegressor(loss='squared_loss')
-
-# Fit the model to the training data
-sgd_regressor.fit(features, labels)
+from sklearn.linear_model import SGDRegressor
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error, mean_absolute_error
 
 
-# Use the model to make predictions on new data
-predictions = sgd_regressor.predict(new_data)
+features, label = load_airbnb()
+
+# use 80% of data for training and 20% of the data for testing
+# random_state ensures same random samples of data will be used for training & testing each time code is run
+X_train, X_test, y_train, y_test = train_test_split(features, label, test_size=0.2, random_state=42)
+
+model = SGDRegressor()
+model.fit(X_train, y_train)
+
+y_pred = model.predict(X_test)
+
+
+
+mse = mean_squared_error(y_test, y_pred)
+mae = mean_absolute_error(y_test, y_pred)
