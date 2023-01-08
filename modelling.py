@@ -17,11 +17,14 @@ print(f'    validation: {len(y_validation)}')
 print(f'    testing: {len(y_test)}')
 
 
-# normalize the labels
+# normalize the features 
 scaler = StandardScaler()
-y_train_scaled = scaler.fit_transform(y_train)
-y_validation_scaled = scaler.transform(y_validation)
-y_test_scaled = scaler.transform(y_test)
+scaler.fit(X_train)
+
+X_train_scaled = scaler.transform(X_train)
+X_validation_scaled = scaler.transform(X_validation)
+X_test_scaled = scaler.transform(X_test)
+
 
 # ensure each run has a level of reproducability
 np.random.seed(5)
@@ -29,11 +32,12 @@ np.random.seed(5)
 model = SGDRegressor()
 
 for epoch in range(1000):
-    model.fit(X_train, y_train_scaled)
+    model.fit(X_train_scaled, y_train)
 
-y_train_pred = model.predict(X_train) # training set used to optimise the model 
-y_validation_pred = model.predict(X_validation) # validation set used to make decisions about the model (which is best)
-y_test_pred = model.predict(X_test) # test set used to estimate how the model will perform on unseen (real world) data
+y_train_pred = model.predict(X_train_scaled) # training set used to optimise the model 
+y_validation_pred = model.predict(X_validation_scaled) # validation set used to make decisions about the model (which is best)
+y_test_pred = model.predict(X_test_scaled) # test set used to estimate how the model will perform on unseen (real world) data
+
 
 # check for data leakage
 train_loss = mean_squared_error(y_train, y_train_pred)
