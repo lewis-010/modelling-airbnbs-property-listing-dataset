@@ -1,6 +1,7 @@
 import numpy as np
 from tabular_data import *
 from sklearn.linear_model import SGDRegressor
+from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, mean_absolute_error
 
@@ -16,17 +17,23 @@ print(f'    validation: {len(y_validation)}')
 print(f'    testing: {len(y_test)}')
 
 
+# normalize the labels
+scaler = StandardScaler()
+y_train_scaled = scaler.fit_transform(y_train)
+y_validation_scaled = scaler.transform(y_validation)
+y_test_scaled = scaler.transform(y_test)
+
 # ensure each run has a level of reproducability
-np.random.seed(2)
+np.random.seed(5)
 
 model = SGDRegressor()
 
 for epoch in range(1000):
-    model.fit(X_train, y_train)
+    model.fit(X_train, y_train_scaled)
 
 y_train_pred = model.predict(X_train) # training set used to optimise the model 
 y_validation_pred = model.predict(X_validation) # validation set used to make decisions about the model (which is best)
-y_test_pred = model.predict(X_test) # test set used estimate how the model will perform on unseen (real wordl) data
+y_test_pred = model.predict(X_test) # test set used to estimate how the model will perform on unseen (real world) data
 
 # check for data leakage
 train_loss = mean_squared_error(y_train, y_train_pred)
