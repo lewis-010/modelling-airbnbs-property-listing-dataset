@@ -26,8 +26,7 @@ X_validation_scaled = scaler.transform(X_validation)
 X_test_scaled = scaler.transform(X_test)
 
 
-# ensure each run has a level of reproducability
-np.random.seed(5)
+np.random.seed(5) # ensure each run has a level of reproducability
 
 model = SGDRegressor()
 
@@ -39,13 +38,18 @@ y_validation_pred = model.predict(X_validation_scaled) # validation set used to 
 y_test_pred = model.predict(X_test_scaled) # test set used to estimate how the model will perform on unseen (real world) data
 
 
-# check for data leakage
+# evaluate model
 train_loss = mean_squared_error(y_train, y_train_pred)
+train_rmse = np.sqrt(train_loss)
+
 validation_loss = mean_squared_error(y_validation, y_validation_pred)
+validation_rmse = np.sqrt(validation_loss)
+
 test_loss = mean_squared_error(y_test, y_test_pred)
+test_rmse = np.sqrt(test_loss)
 
 print(
-    f'Train loss: {train_loss}, ' 
-    f'Validation loss: {validation_loss}, '
-    f'Test loss: {test_loss}'
+    f'Train_rmse: {train_rmse}, ' 
+    f'Validation_rmse: {validation_rmse}, '
+    f'Test_rmse: {test_rmse}'
 )
