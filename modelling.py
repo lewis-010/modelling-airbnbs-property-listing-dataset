@@ -3,7 +3,7 @@ from tabular_data import *
 from sklearn.linear_model import SGDRegressor
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import mean_squared_error, r2_score
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import GridSearchCV, train_test_split
 
 features, label = load_airbnb()
 X_train, X_test, y_train, y_test = train_test_split(features, label, test_size=0.3)
@@ -107,3 +107,33 @@ def custom_tune_regression_model_hyperparameters(model_class, X_train_scaled, y_
     metrics = {'validation_rmse': validation_rmse, 'test_rmse': test_rmse, 'validation_r2': validation_r2, 'test_r2': test_r2}
 
     return best_model, best_params, metrics
+
+
+def tune_regression_model_hyperparameters(model_class, X_train_scaled, y_train, 
+    X_validation_scaled, y_validation, X_test_scaled, y_test, param_grid):
+    
+    # create instance of the GridSearchCV
+    grid_search = GridSearchCV(model_class(), param_grid, scoring='neg_mean_squared_error', cv=5 )
+
+    grid_search.fit(X_train_scaled, y_train)
+    best_model = grid_search.best_estimator_
+
+    # use the best model from the grid search to predict the validation & test sets
+    y_validation_pred = grid_search.predict(X_validation_scaled)
+    y_test_pred = grid_search.predict(X_test_scaled)
+
+    # determine performance metrics (RMSE & R2)
+    validation_mse = mean_squared_error(y_validation, y_validation_pred)
+    validation_rmse = np.sqrt(validation_mse)
+    test_mse = mean_squared_error(y_test, y_test_pred)
+    test_rmse = np.sqrt(test_mse)
+
+    validation_r2 = r2_score(y_validation, y_validation_pred)
+    test_r2 = r2_score(y_test, y_test_pred)
+
+    metrics = {'validation_rmse': validation_rmse, 'test_rmse': test_rmse, 'validation_r2': validation_r2, 'test_r2': test_r2}
+
+    print(metrics)
+    print(grid_search.best_params_)
+
+    return best_model, grid_search.best_params_, metrics
