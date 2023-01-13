@@ -28,9 +28,7 @@ X_test_scaled = scaler.transform(X_test)
 
 
 np.random.seed(5) # ensure each run has a level of reproducability
-
 model = SGDRegressor()
-
 for epoch in range(1000):
     model.fit(X_train_scaled, y_train)
 
@@ -65,3 +63,6 @@ print(
     f'Validation_r2 {validation_r2}, '
     f'Test_r2: {test_r2}'
 )
+
+def custom_tune_regression_model_hyperparameters():
+    
