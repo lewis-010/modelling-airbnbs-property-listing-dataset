@@ -3,7 +3,7 @@ from tabular_data import *
 from sklearn.linear_model import SGDRegressor
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import mean_squared_error, r2_score
-from sklearn.model_selection import GridSearchCV, train_test_split
+from sklearn.model_selection import train_test_split
 
 features, label = load_airbnb()
 X_train, X_test, y_train, y_test = train_test_split(features, label, test_size=0.3)
@@ -64,8 +64,11 @@ print(
     f'Test_r2: {test_r2}'
 )
 
-def custom_tune_regression_model_hyperparameters(
-    model_class, X_train_scaled, y_train, X_validation_scaled, y_validation, X_test_scaled, y_test, param_grid
-    ):
-    model = model_class()
+
+def custom_tune_regression_model_hyperparameters(model_class, X_train_scaled, y_train, 
+    X_validation_scaled, y_validation, X_test_scaled, y_test, param_grid):
     
+    # initialise variables to keep track of the best model & corresponding hyperparameters
+    best_params = None
+    best_score = -np.inf
+    best_model = None
