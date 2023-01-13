@@ -72,3 +72,33 @@ def custom_tune_regression_model_hyperparameters(model_class, X_train_scaled, y_
     best_params = None
     best_score = -np.inf
     best_model = None
+
+    # iterate over all possible combinations of hyperparameter values
+    for param1_value in param_grid['param1']:
+        for param2_value in param_grid['param2']:
+            for param3_value in param_grid['param3']:
+
+                model = model_class(param1 = param1_value, param2 = param2_value, param3 = param3_value)
+                model.fit(X_train_scaled, y_train)
+
+                score = mean_squared_error(y_validation, model.predict(X_validation_scaled))
+
+                # update the best model if the current model has a better score
+                if score > best_score:
+                    best_score = score
+                    best_params = {'param1': param1_value, 'param2': param2_value, 'param3': param3_value}
+                    best_model = model
+                    
+    print(best_params)
+    print(best_score)
+
+    y_validation_pred = best_model.predict(X_validation_scaled)
+    y_test_pred = best_model.predict(X_test_scaled)
+
+    # determine performance metrics
+    validation_mse = mean_squared_error(y_validation, y_validation_pred)
+    validation_rmse = np.sqrt(validation_mse)
+
+    test_mse = mean_squared_error(y_test, y_test_pred)
+    test_rmse = np.sqrt(test_mse)
+    
