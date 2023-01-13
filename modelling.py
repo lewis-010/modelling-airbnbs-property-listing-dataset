@@ -95,10 +95,15 @@ def custom_tune_regression_model_hyperparameters(model_class, X_train_scaled, y_
     y_validation_pred = best_model.predict(X_validation_scaled)
     y_test_pred = best_model.predict(X_test_scaled)
 
-    # determine performance metrics
+    # determine performance metrics (RMSE & R2)
     validation_mse = mean_squared_error(y_validation, y_validation_pred)
     validation_rmse = np.sqrt(validation_mse)
-
     test_mse = mean_squared_error(y_test, y_test_pred)
     test_rmse = np.sqrt(test_mse)
-    
+
+    validation_r2 = r2_score(y_validation, y_validation_pred)
+    test_r2 = r2_score(y_test, y_test_pred)
+
+    metrics = {'validation_rmse': validation_rmse, 'test_rmse': test_rmse, 'validation_r2': validation_r2, 'test_r2': test_r2}
+
+    return best_model, best_params, metrics
