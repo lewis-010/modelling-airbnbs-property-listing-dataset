@@ -137,3 +137,12 @@ def tune_regression_model_hyperparameters(model_class, X_train_scaled, y_train,
     print(grid_search.best_params_)
 
     return best_model, grid_search.best_params_, metrics
+
+param_grid = {
+    'alpha': [0.0001, 0.001, 0.01, 0.1],
+    'learning_rate': ['constant', 'optimal'],
+    'max_iter': [1000, 5000, 10000]    
+}
+
+best_model, best_params, metrics = tune_regression_model_hyperparameters(SGDRegressor, X_train_scaled, y_train, 
+    X_validation_scaled, y_validation, X_test_scaled, y_test, param_grid)
