@@ -42,29 +42,29 @@ y_test_pred = model.predict(X_test_scaled) # test set used to estimate how the m
 
 # evaluate model using RMSE
 train_loss = mean_squared_error(y_train, y_train_pred) # should I be evaluating using the training set??
-baseline_train_rmse = np.sqrt(train_loss)
+train_rmse = np.sqrt(train_loss)
 
 validation_loss = mean_squared_error(y_validation, y_validation_pred)
-baseline_validation_rmse = np.sqrt(validation_loss)
+validation_rmse = np.sqrt(validation_loss)
 
 test_loss = mean_squared_error(y_test, y_test_pred)
-baseline_test_rmse = np.sqrt(test_loss)
+test_rmse = np.sqrt(test_loss)
 
 print(
-    f'Train_rmse: {baseline_train_rmse}, ' 
-    f'Validation_rmse: {baseline_validation_rmse}, '
-    f'Test_rmse: {baseline_test_rmse}'
+    f'baseline_train_rmse: {train_rmse}, ' 
+    f'baseline_validation_rmse: {validation_rmse}, '
+    f'baseline_vest_rmse: {test_rmse}'
 )
 
 # evaluate model using R^2
-baseline_train_r2 = r2_score(y_train, y_train_pred) # should I be evaluating using the training set??
-baseline_validation_r2 = r2_score(y_validation, y_validation_pred)
-baseline_test_r2 = r2_score(y_test, y_test_pred)
+train_r2 = r2_score(y_train, y_train_pred) # should I be evaluating using the training set??
+validation_r2 = r2_score(y_validation, y_validation_pred)
+test_r2 = r2_score(y_test, y_test_pred)
 
 print(
-    f'Training_r2: {baseline_train_r2}, '
-    f'Validation_r2 {baseline_validation_r2}, '
-    f'Test_r2: {baseline_test_r2}'
+    f'baseline_training_r2: {train_r2}, '
+    f'baseline_validation_r2 {validation_r2}, '
+    f'baseline_test_r2: {test_r2}'
 )
 
 
@@ -144,13 +144,16 @@ def tune_regression_model_hyperparameters(model_class, X_train_scaled, y_train,
 param_grid = {
     'alpha': [0.0001, 0.001, 0.01, 0.1],
     'learning_rate': ['constant', 'optimal'],
-    'max_iter': [1000, 5000, 10000]    
+    'max_iter': [100, 500, 1000]    
 }
 
-current_version = 1
+
 def save_model(model, hyperparameters, metrics, parent_folder='models/regression'):
     
-    global current_version
+    # takes version from version.json file to append to each new model folder
+    with open('version.json', 'r') as f:
+        current_version = json.load(f) 
+
     folder = f'{parent_folder}/version-{current_version}'
     os.makedirs(folder, exist_ok=True)
     model_file = f'{folder}/model.joblib'
@@ -163,6 +166,8 @@ def save_model(model, hyperparameters, metrics, parent_folder='models/regression
         json.dump(metrics, f)
     
     current_version += 1
+    with open('version.json', 'w') as f:
+        json.dump(current_version, f)
 
 
 # train, tune & save models
