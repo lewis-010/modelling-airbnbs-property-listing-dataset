@@ -42,29 +42,29 @@ y_test_pred = model.predict(X_test_scaled) # test set used to estimate how the m
 
 # evaluate model using RMSE
 train_loss = mean_squared_error(y_train, y_train_pred) # should I be evaluating using the training set??
-train_rmse = np.sqrt(train_loss)
+baseline_train_rmse = np.sqrt(train_loss)
 
 validation_loss = mean_squared_error(y_validation, y_validation_pred)
-validation_rmse = np.sqrt(validation_loss)
+baseline_validation_rmse = np.sqrt(validation_loss)
 
 test_loss = mean_squared_error(y_test, y_test_pred)
-test_rmse = np.sqrt(test_loss)
+baseline_test_rmse = np.sqrt(test_loss)
 
 print(
-    f'Train_rmse: {train_rmse}, ' 
-    f'Validation_rmse: {validation_rmse}, '
-    f'Test_rmse: {test_rmse}'
+    f'Train_rmse: {baseline_train_rmse}, ' 
+    f'Validation_rmse: {baseline_validation_rmse}, '
+    f'Test_rmse: {baseline_test_rmse}'
 )
 
 # evaluate model using R^2
-train_r2 = r2_score(y_train, y_train_pred) # should I be evaluating using the training set??
-validation_r2 = r2_score(y_validation, y_validation_pred)
-test_r2 = r2_score(y_test, y_test_pred)
+baseline_train_r2 = r2_score(y_train, y_train_pred) # should I be evaluating using the training set??
+baseline_validation_r2 = r2_score(y_validation, y_validation_pred)
+baseline_test_r2 = r2_score(y_test, y_test_pred)
 
 print(
-    f'Training_r2: {train_r2}, '
-    f'Validation_r2 {validation_r2}, '
-    f'Test_r2: {test_r2}'
+    f'Training_r2: {baseline_train_r2}, '
+    f'Validation_r2 {baseline_validation_r2}, '
+    f'Test_r2: {baseline_test_r2}'
 )
 
 
@@ -144,19 +144,29 @@ def tune_regression_model_hyperparameters(model_class, X_train_scaled, y_train,
 param_grid = {
     'alpha': [0.0001, 0.001, 0.01, 0.1],
     'learning_rate': ['constant', 'optimal'],
-    'max_iter': [1000, 5000, 100000]    
+    'max_iter': [1000, 5000, 10000]    
 }
 
-best_model, best_params, metrics = tune_regression_model_hyperparameters(SGDRegressor, X_train_scaled, y_train, 
-    X_validation_scaled, y_validation, X_test_scaled, y_test, param_grid)
-
-
-def save_model(best_model, best_params, metrics, folder='models/regression'):
-
-    dump(model, f'{folder}/model.jobib')
+current_version = 1
+def save_model(model, hyperparameters, metrics, parent_folder='models/regression'):
+    
+    global current_version
+    folder = f'{parent_folder}/version-{current_version}'
+    os.makedirs(folder, exist_ok=True)
+    model_file = f'{folder}/model.joblib'
+    dump(model, model_file)
     
     with open(f'{folder}/hyperparameters.json', 'w') as f:
-        json.dump(best_params, f)
+        json.dump(hyperparameters, f)
 
     with open(f'{folder}/metrics.json', 'w') as f:
         json.dump(metrics, f)
+    
+    current_version += 1
+
+
+# train, tune & save models
+best_model, best_params, metrics = tune_regression_model_hyperparameters(SGDRegressor, X_train_scaled, y_train, 
+    X_validation_scaled, y_validation, X_test_scaled, y_test, param_grid)
+
+save_model(best_model, best_params, metrics)
