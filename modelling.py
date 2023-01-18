@@ -1,4 +1,7 @@
+import json
+from joblib import dump
 import numpy as np
+import os
 from tabular_data import *
 from sklearn.linear_model import SGDRegressor
 from sklearn.preprocessing import StandardScaler
@@ -141,8 +144,19 @@ def tune_regression_model_hyperparameters(model_class, X_train_scaled, y_train,
 param_grid = {
     'alpha': [0.0001, 0.001, 0.01, 0.1],
     'learning_rate': ['constant', 'optimal'],
-    'max_iter': [1000, 5000, 10000]    
+    'max_iter': [1000, 5000, 100000]    
 }
 
 best_model, best_params, metrics = tune_regression_model_hyperparameters(SGDRegressor, X_train_scaled, y_train, 
     X_validation_scaled, y_validation, X_test_scaled, y_test, param_grid)
+
+
+def save_model(best_model, best_params, metrics, folder='models/regression'):
+
+    dump(model, f'{folder}/model.jobib')
+    
+    with open(f'{folder}/hyperparameters.json', 'w') as f:
+        json.dump(best_params, f)
+
+    with open(f'{folder}/metrics.json', 'w') as f:
+        json.dump(metrics, f)
