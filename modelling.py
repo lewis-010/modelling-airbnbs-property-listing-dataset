@@ -142,10 +142,16 @@ def tune_regression_model_hyperparameters(model_class, X_train_scaled, y_train,
     return best_model, grid_search.best_params_, metrics
 
 param_grid = {
+    'loss': ['squared_loss', 'huber', 'epsilon_insensitive', 'squared_epsilon_insensitive'],
+    'penalty': ['l2', 'l1', 'elasticnet'],
     'alpha': [0.0001, 0.001, 0.01, 0.1],
-    'learning_rate': ['constant', 'optimal'],
-    'max_iter': [100, 500, 1000]    
+    'l1_ratio': [0, 0.1, 0.5, 0.9, 1],
+    'fit_intercept': [True, False],
+    'max_iter': [50, 100, 250, 500, 1000],
+    'tol': [1e-3, 1e-4, 1e-5],
+    'solver': ['sgd', 'adam']
 }
+
 
 
 def save_model(model, hyperparameters, metrics, parent_folder='models/regression', model_name=None):
