@@ -116,8 +116,7 @@ def tune_regression_model_hyperparameters(model_class, X_train_scaled, y_train,
     X_validation_scaled, y_validation, X_test_scaled, y_test, param_grid):
     
     # create instance of the GridSearchCV
-    grid_search = GridSearchCV(model_class(), param_grid, scoring='neg_mean_squared_error', cv=5 )
-
+    grid_search = GridSearchCV(model_class(), param_grid, cv=5)
     grid_search.fit(X_train_scaled, y_train)
     best_model = grid_search.best_estimator_
 
@@ -142,16 +141,14 @@ def tune_regression_model_hyperparameters(model_class, X_train_scaled, y_train,
     return best_model, grid_search.best_params_, metrics
 
 param_grid = {
-    'loss': ['squared_loss', 'huber', 'epsilon_insensitive', 'squared_epsilon_insensitive'],
+    'loss': ['squared_error', 'huber', 'epsilon_insensitive', 'squared_epsilon_insensitive'],
     'penalty': ['l2', 'l1', 'elasticnet'],
-    'alpha': [0.0001, 0.001, 0.01, 0.1],
+    'alpha': [0.000001, 0.00001, 0.0001, 0.001],
     'l1_ratio': [0, 0.1, 0.5, 0.9, 1],
     'fit_intercept': [True, False],
-    'max_iter': [50, 100, 250, 500, 1000],
-    'tol': [1e-3, 1e-4, 1e-5],
-    'solver': ['sgd', 'adam']
+    'max_iter': [5000, 10000, 25000, 50000],
+    'learning_rate': ['constant', 'optimal', 'adaptive']
 }
-
 
 
 def save_model(model, hyperparameters, metrics, parent_folder='models/regression', model_name=None):
@@ -163,6 +160,7 @@ def save_model(model, hyperparameters, metrics, parent_folder='models/regression
     model_class_folder = f'{parent_folder}/{model_name}'
     os.makedirs(model_class_folder, exist_ok=True)
     folder =f'{model_class_folder}/version-{current_version}'
+    os.makedirs(folder, exist_ok=True)
     model_file = f'{folder}/model.joblib'
     dump(model, model_file)
     
@@ -181,4 +179,4 @@ def save_model(model, hyperparameters, metrics, parent_folder='models/regression
 best_model, best_params, metrics = tune_regression_model_hyperparameters(SGDRegressor, X_train_scaled, y_train, 
     X_validation_scaled, y_validation, X_test_scaled, y_test, param_grid)
 
-save_model(best_model, best_params, metrics, model_name=SGDRegressor)
+save_model(best_model, best_params, metrics, model_name=str(type(best_model).__name__))
