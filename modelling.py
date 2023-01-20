@@ -148,13 +148,19 @@ param_grid = {
 }
 
 
-def save_model(model, hyperparameters, metrics, parent_folder='models/regression'):
+def save_model(model, hyperparameters, metrics, parent_folder='models/regression', model_name=None):
     
     # takes version from version.json file to append to each new model folder
     with open('version.json', 'r') as f:
         current_version = json.load(f) 
 
-    folder = f'{parent_folder}/version-{current_version}'
+    if model_name:
+        model_class_folder = f'{parent_folder}/{model_name}'
+        os.makedirs(model_class_folder, exist_ok=True)
+        folder =f'{model_class_folder}/version-{current_version}'
+    
+    else:
+        folder = f'{parent_folder}/version-{current_version}'
     os.makedirs(folder, exist_ok=True)
     model_file = f'{folder}/model.joblib'
     dump(model, model_file)
@@ -174,4 +180,4 @@ def save_model(model, hyperparameters, metrics, parent_folder='models/regression
 best_model, best_params, metrics = tune_regression_model_hyperparameters(SGDRegressor, X_train_scaled, y_train, 
     X_validation_scaled, y_validation, X_test_scaled, y_test, param_grid)
 
-save_model(best_model, best_params, metrics)
+save_model(best_model, best_params, metrics, model_name=SGDRegressor)
