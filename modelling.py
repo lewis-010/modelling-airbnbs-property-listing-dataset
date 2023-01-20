@@ -154,14 +154,9 @@ def save_model(model, hyperparameters, metrics, parent_folder='models/regression
     with open('version.json', 'r') as f:
         current_version = json.load(f) 
 
-    if model_name:
-        model_class_folder = f'{parent_folder}/{model_name}'
-        os.makedirs(model_class_folder, exist_ok=True)
-        folder =f'{model_class_folder}/version-{current_version}'
-    
-    else:
-        folder = f'{parent_folder}/version-{current_version}'
-    os.makedirs(folder, exist_ok=True)
+    model_class_folder = f'{parent_folder}/{model_name}'
+    os.makedirs(model_class_folder, exist_ok=True)
+    folder =f'{model_class_folder}/version-{current_version}'
     model_file = f'{folder}/model.joblib'
     dump(model, model_file)
     
