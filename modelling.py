@@ -4,6 +4,8 @@ import os
 from joblib import dump
 from tabular_data import *
 from sklearn.linear_model import SGDRegressor
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.model_selection import GridSearchCV, train_test_split
@@ -81,7 +83,7 @@ def tune_regression_model_hyperparameters(model_class, X_train_scaled, y_train,
 
     return best_model, grid_search.best_params_, metrics
 
-param_grid = {
+param_grid_sgd = {
     'loss': ['squared_error', 'huber', 'epsilon_insensitive', 'squared_epsilon_insensitive'],
     'penalty': ['l2', 'l1', 'elasticnet'],
     'alpha': [0.000001, 0.00001, 0.0001, 0.001],
@@ -89,6 +91,25 @@ param_grid = {
     'fit_intercept': [True, False],
     'max_iter': [5000, 10000, 25000, 50000],
     'learning_rate': ['constant', 'optimal', 'adaptive']
+}
+
+param_grid_rfg = {
+    'n_estimators': [10, 50, 100, 200],
+    'max_depth': [None, 5, 10, 15],
+    'min_samples_split': [2, 5, 10]
+}
+
+param_grid_gbr = {
+    'loss': ['ls', 'lad', 'huber', 'quantile'],
+    'learning_rate': [0.01, 0.1, 1],
+    'n_estimators': [10, 50, 100, 200],
+    'max_depth': [1, 3, 5, 7]
+}
+
+param_grid_dtr = {
+    'max_depth': [None, 2, 4, 6, 8],
+    'min_samples_split': [2, 5, 10],
+    'min_samples_leaf': [1, 2, 4]
 }
 
 
@@ -176,8 +197,8 @@ def evaluate_all_models():
 
     # perform gridsearch for finding the best hyperparameters
     best_model, best_params, metrics = tune_regression_model_hyperparameters(SGDRegressor, X_train_scaled, y_train, 
-        X_validation_scaled, y_validation, X_test_scaled, y_test, param_grid)
-    
+        X_validation_scaled, y_validation, X_test_scaled, y_test, param_grid_sgd)
+
     save_model(best_model, best_params, metrics, model_name=str(type(best_model).__name__))
 
 
