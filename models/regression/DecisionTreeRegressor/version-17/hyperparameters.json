@@ -1,0 +1,1 @@
+{"criterion": "squared_error", "max_depth": 4, "min_samples_leaf": 20, "min_samples_split": 4}
