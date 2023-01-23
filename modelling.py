@@ -23,20 +23,25 @@ param_grid_sgd = {
 param_grid_rfg = {
     'n_estimators': [10, 50, 100, 200],
     'max_depth': [None, 5, 10, 15],
-    'min_samples_split': [2, 5, 10]
-}
+    'min_samples_split': [2, 5, 10],
+    'min_samples_leaf': [1, 2, 3],
+    'criterion': ['mse', 'mae']
+    }
 
 param_grid_gbr = {
     'loss': ['ls', 'lad', 'huber', 'quantile'],
     'learning_rate': [0.01, 0.1, 1],
     'n_estimators': [10, 50, 100, 200],
-    'max_depth': [1, 3, 5, 7]
+    'max_depth': [1, 3, 5, 7],
+    'min_samples_leaf': [1, 2, 3],
+    'learning_rate': [0.1, 0.25, 0.5, 0.75, 0.1]
 }
 
 param_grid_dtr = {
     'max_depth': [None, 2, 4, 6, 8],
     'min_samples_split': [2, 5, 10],
-    'min_samples_leaf': [1, 2, 4]
+    'min_samples_leaf': [1, 2, 4],
+    'criterion': ['mse', 'mae']
 }
 
 
