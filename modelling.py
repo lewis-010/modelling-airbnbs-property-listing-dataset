@@ -92,7 +92,7 @@ def tune_regression_model_hyperparameters(model_class, X_train_scaled, y_train,
     X_validation_scaled, y_validation, X_test_scaled, y_test, param_grid):
     
     # create instance of the GridSearchCV
-    grid_search = GridSearchCV(model_class(), param_grid, cv=5)
+    grid_search = GridSearchCV(model_class(), param_grid, scoring='r2', cv=5)
     grid_search.fit(X_train_scaled, y_train)
     best_model = grid_search.best_estimator_
 
