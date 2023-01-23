@@ -21,10 +21,11 @@ param_grid_sgd = {
 }
 
 param_grid_rfr = {
-    'n_estimators': [300, 400, 500],
-    'max_depth': [100, 150, 200],
+    'n_estimators': [200, 250, 300],
+    'max_depth': [10, 100, 200],
     'min_samples_split': [2, 5],
-    'criterion': ['squared_error', 'absolute_error']
+    'criterion': ['squared_error', 'absolute_error'],
+    'bootstrap': [True]
 }
 
 param_grid_gbr = {
@@ -163,7 +164,7 @@ def evaluate_all_models():
     X_test_scaled = scaler.transform(X_test)
 
     np.random.seed(5) # ensure each run has a level of reproducability
-    model = DecisionTreeRegressor()
+    model = RandomForestRegressor()
     for epoch in range(1000):
         model.fit(X_train_scaled, y_train)
 
@@ -199,8 +200,8 @@ def evaluate_all_models():
     )
 
     # perform gridsearch for finding the best hyperparameters
-    best_model, best_params, metrics = tune_regression_model_hyperparameters(DecisionTreeRegressor, X_train_scaled, y_train, 
-        X_validation_scaled, y_validation, X_test_scaled, y_test, param_grid_dtr)
+    best_model, best_params, metrics = tune_regression_model_hyperparameters(RandomForestRegressor, X_train_scaled, y_train, 
+        X_validation_scaled, y_validation, X_test_scaled, y_test, param_grid_rfr)
 
     save_model(best_model, best_params, metrics, model_name=str(type(best_model).__name__))
 
