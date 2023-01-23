@@ -30,15 +30,15 @@ param_grid_rfr = {
 param_grid_gbr = {
     'loss': ['squared_error', 'absolute_error', 'huber', 'quantile'],
     'learning_rate': [0.01, 0.1, 1],
-    'n_estimators': [600, 800, 1000],
+    'n_estimators': [600, 800],
     'max_depth': [1, 3, 5],
     'subsample': [0.25, 0.5, 0.75]
 }
 
 param_grid_dtr = {
-    'max_depth': [30, 50, 70],
+    'max_depth': [8, 12, 16],
     'criterion': ['squared_error', 'absolute_error'],
-    'min_samples_split': [10, 12, 14, 16],
+    'min_samples_split': [20, 12, 14, 16],
     'min_samples_leaf': [10]
 }
 
@@ -162,7 +162,7 @@ def evaluate_all_models():
     X_test_scaled = scaler.transform(X_test)
 
     np.random.seed(5) # ensure each run has a level of reproducability
-    model = DecisionTreeRegressor()
+    model = GradientBoostingRegressor()
     for epoch in range(1000):
         model.fit(X_train_scaled, y_train)
 
@@ -198,8 +198,8 @@ def evaluate_all_models():
     )
 
     # perform gridsearch for finding the best hyperparameters
-    best_model, best_params, metrics = tune_regression_model_hyperparameters(DecisionTreeRegressor, X_train_scaled, y_train, 
-        X_validation_scaled, y_validation, X_test_scaled, y_test, param_grid_dtr)
+    best_model, best_params, metrics = tune_regression_model_hyperparameters(GradientBoostingRegressor, X_train_scaled, y_train, 
+        X_validation_scaled, y_validation, X_test_scaled, y_test, param_grid_gbr)
 
     save_model(best_model, best_params, metrics, model_name=str(type(best_model).__name__))
 
