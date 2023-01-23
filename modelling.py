@@ -162,7 +162,7 @@ def evaluate_all_models():
     X_test_scaled = scaler.transform(X_test)
 
     np.random.seed(5) # ensure each run has a level of reproducability
-    model = SGDRegressor()
+    model = DecisionTreeRegressor()
     for epoch in range(1000):
         model.fit(X_train_scaled, y_train)
 
@@ -198,8 +198,8 @@ def evaluate_all_models():
     )
 
     # perform gridsearch for finding the best hyperparameters
-    best_model, best_params, metrics = tune_regression_model_hyperparameters(SGDRegressor, X_train_scaled, y_train, 
-        X_validation_scaled, y_validation, X_test_scaled, y_test, param_grid_sgd)
+    best_model, best_params, metrics = tune_regression_model_hyperparameters(DecisionTreeRegressor, X_train_scaled, y_train, 
+        X_validation_scaled, y_validation, X_test_scaled, y_test, param_grid_dtr)
 
     save_model(best_model, best_params, metrics, model_name=str(type(best_model).__name__))
 
