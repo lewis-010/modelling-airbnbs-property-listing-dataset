@@ -28,11 +28,11 @@ param_grid_rfr = {
 }
 
 param_grid_gbr = {
-    'loss': ['squared_error', 'absolute_error', 'huber', 'quantile'],
-    'learning_rate': [0.01, 0.1, 1],
-    'n_estimators': [600, 800],
+    'loss': ['squared_error', 'absolute_error'],
+    'learning_rate': [0.0001, 0.001, 0.01],
+    'n_estimators': [200, 400],
     'max_depth': [1, 3, 5],
-    'subsample': [0.25, 0.5, 0.75]
+    'subsample': [0.25, 0.75]
 }
 
 param_grid_dtr = {
