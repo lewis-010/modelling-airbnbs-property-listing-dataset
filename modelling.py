@@ -36,10 +36,11 @@ param_grid_gbr = {
 }
 
 param_grid_dtr = {
-    'max_depth': [4, 6, 8, 10],
+    'max_depth': [None, 4, 6, 8, 10],
     'criterion': ['squared_error', 'absolute_error'],
     'min_samples_split': [4, 6, 8, 10],
-    'min_samples_leaf': [20, 30, 40]
+    'min_samples_leaf': [20, 30, 40],
+    'splitter': ['best', 'random']
 }
 
 
