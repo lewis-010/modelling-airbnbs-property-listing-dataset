@@ -1,1 +1,0 @@
-{"alpha": 1e-05, "fit_intercept": true, "l1_ratio": 1, "learning_rate": "optimal", "loss": "huber", "max_iter": 10000, "penalty": "l2"}

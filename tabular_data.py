@@ -1,5 +1,4 @@
 import pandas as pd
-import numpy as np
 
 def remove_rows_with_missing_data():
      df.dropna(subset=['Description', 'Cleanliness_rating', 'Accuracy_rating', 'Communication_rating', 'Location_rating', 'Check-in_rating', 'Value_rating'], inplace=True)
@@ -24,7 +23,7 @@ if __name__=='__main__':
     df.to_csv('clean_tabular_data.csv')
 
 
-def load_airbnb():
+def load_airbnb(df, label):
     df = pd.read_csv('tabular_data/clean_tabular_data.csv')
     df.drop(columns=['ID', 'Category', 'Title', 'Description', 'Amenities', 'Location', 'url'], inplace=True)
     df.drop(df.columns[0], axis=1, inplace=True)
