@@ -72,3 +72,21 @@ def load_airbnb(label):
 
 features, labels = load_airbnb('Price_Night')
 ```
+- A baseline regression model was created in the *modelling.py* file with [Scikit-learn's](https://scikit-learn.org/stable/index.html) built-in regression model class [SGDRegressor](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.SGDRegressor.html). 
+- This provided R2 and RMSE metrics for the validation and test sets that could be used to compare more advanced to.
+- Prior to passing in the data, the features were normalized using the *StandardScalar* function from Scikit-learn.
+
+## Milestone 3
+- Another 3 regression models from Scikit-learn were used to find the most accurate one.
+    - [Random Forest Regressor](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestRegressor.html)
+    - [Decision Tree Regressor](https://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeRegressor.html)
+    - [Gradient Boosting Regressor](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingRegressor.html)
+- The next step was to tune the hyperparameters for each of the 4 models; an important step in building ML models that helps to ensure greater accuracy and reducing over/underfitting of the data, amongst other benefits.
+- For these models, a grid search was used to tune find the best hyperparameters based on the R2 and RMSE score.
+```Python
+grid_search = GridSearchCV(estimator=model, param_grid=parameter_grid, scoring=['r2', 'neg_root_mean_squared_error'], refit='neg_root_mean_squared_error', cv=5)
+    grid_search.fit(X_train_scaled, y_train)
+    best_model = models[model_class](**grid_search.best_params_)
+```
+- After the optimal hyperparameters had been determined for each model, they were all saved in json files alongisde the performance metrics.
+- Another function was then used to return the best model from the 4 available; in this instance it was the Random Forest Regressor model.
