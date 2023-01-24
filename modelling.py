@@ -241,3 +241,5 @@ def find_best_model(models_directory):
 
 if __name__=='__main__':
     evaluate_all_models()
+    best_model = find_best_model('models/regression')
+    print(best_model)
