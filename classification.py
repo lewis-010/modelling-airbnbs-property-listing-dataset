@@ -4,7 +4,7 @@ from tabular_data import *
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.preprocessing import OneHotEncoder
+from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import GridSearchCV, train_test_split
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, classification_report
@@ -13,9 +13,13 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 np.random.seed(5)
 dataset = pd.read_csv('tabular_data/clean_tabular_data.csv')
 features, label = load_airbnb(dataset, 'Category')
+label_series = dataset['Category']
 
-encoder = OneHotEncoder()
-label_encoded = encoder.fit_transform(label.values.reshape(-1, 1))
+
+encoder = LabelEncoder()
+label_categories = label_series.unique()
+label_encoded = encoder.fit_transform(label_series)
+
 
 X_train, X_test, y_train, y_test = train_test_split(features, label_encoded, test_size=0.3)
 X_test, X_validation, y_test, y_validation = train_test_split(X_test, y_test, test_size=0.5)
@@ -23,9 +27,9 @@ X_test, X_validation, y_test, y_validation = train_test_split(X_test, y_test, te
 print(f'Number of samples in dataset: {len(features)}')
 print(
     'Number of samples in: '
-    f'training: {len(y_train)}, '
-    f'validation: {len(y_validation)}, '
-    f'testing: {len(y_test)}, '
+    f'training: {y_train.shape[0]}, '
+    f'validation: {y_validation.shape[0]}, '
+    f'testing: {y_test.shape[0]}, '
 )
 
 # normalize the features 
@@ -37,8 +41,7 @@ X_test_scaled = scaler.transform(X_test)
 
 # get baseline classification model
 model = LogisticRegression()
-for epoch in range(1000):
-    model.fit(X_train_scaled, y_train)
+model.fit(X_train_scaled, y_train)
 
 y_train_pred = model.predict(X_train_scaled) 
 y_validation_pred = model.predict(X_validation_scaled)
