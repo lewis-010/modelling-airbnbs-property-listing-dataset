@@ -38,9 +38,9 @@ model = SGDRegressor()
 for epoch in range(1000):
     model.fit(X_train_scaled, y_train)
 
-y_train_pred = model.predict(X_train_scaled) # training set used to optimise the model 
-y_validation_pred = model.predict(X_validation_scaled) # validation set used to make decisions about the model (which is best)
-y_test_pred = model.predict(X_test_scaled) # test set used to estimate how the model will perform on unseen (real world) data
+y_train_pred = model.predict(X_train_scaled) 
+y_validation_pred = model.predict(X_validation_scaled)
+y_test_pred = model.predict(X_test_scaled)
 
 # evaluate model using RMSE
 train_loss = mean_squared_error(y_train, y_train_pred)
@@ -52,7 +52,7 @@ test_rmse = np.sqrt(test_loss)
 print(
     f'baseline_train_rmse: {train_rmse}, ' 
     f'baseline_validation_rmse: {validation_rmse}, '
-    f'baseline_vest_rmse: {test_rmse}'
+    f'baseline_test_rmse: {test_rmse}'
 )
 
 # evaluate model using R2
