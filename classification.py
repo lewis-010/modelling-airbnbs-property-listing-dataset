@@ -174,8 +174,6 @@ def evaluate_all_models():
     'n_estimators': [25, 50, 100,],
     'learning_rate': [0.01, 0.1, 1],
     'max_depth': [1, 3, 5],
-    'min_samples_split': [2, 4, 8],
-    'min_samples_leaf': [1, 3, 5],
     'max_features': [1, 2, 3]
     })
 
@@ -187,15 +185,33 @@ def evaluate_all_models():
     'max_depth': [10, 20, 30],
     'min_samples_split': [2, 4, 0.2, 0.4],
     'min_samples_leaf': [1, 3, 5],
-    'criterion': ['gini', 'entropy'],
     'max_features': [4, 6, 8]
     })
 
     save_model(dtc_model, 'DecisionTreeClassifier')
 
 
+def find_best_model(models_directory):
+    best_model = None
+    best_acc = -float('inf')
+    best_f1 = float('inf')
+
+    for model_name in os.listdir(models_directory):
+        metrics_path = os.path.join(models_directory, model_name, 'metrics.json')
+        with open(metrics_path) as f:
+            metrics = json.load(f)
+            val_acc = metrics['validation_acc'] 
+            val_f1 = metrics['validation_f1']
+
+            if val_acc > best_acc and val_f1 > best_f1:
+                best_model = model_name
+                best_acc = val_acc
+                best_f1 = val_f1
+    
+    return best_model
 
 if __name__=='__main__':
     evaluate_all_models()
-    
+    best_model = find_best_model('models/classification')
+    print(best_model)
     

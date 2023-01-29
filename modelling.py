@@ -224,7 +224,7 @@ def find_best_model(models_directory):
     best_r2 = -float('inf')
     best_rmse = float('inf')
 
-    for model_name in os.listdir('models/regression'):
+    for model_name in os.listdir(models_directory):
         metrics_path = os.path.join(models_directory, model_name, 'metrics.json')
         with open(metrics_path) as f:
             metrics = json.load(f)
