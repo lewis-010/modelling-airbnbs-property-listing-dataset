@@ -93,7 +93,7 @@ print(
 
 def tune_regression_model_hyperparameters(model_class, X_train_scaled, y_train, 
     X_validation_scaled, y_validation, X_test_scaled, y_test, parameter_grid):
-    np.random.seed(2)
+    np.random.seed(5)
 
     models = {
         'LogisticRegression': LogisticRegression,
@@ -141,3 +141,59 @@ def save_model(best_model_data, model_name):
 
     with open(f'{model_folder}/metrics.json', 'w') as file:
         json.dump(metrics, file)
+
+def evaluate_all_models():
+    np.random.seed(5)
+
+    lr_model = tune_regression_model_hyperparameters('LogisticRegression',  X_train_scaled, y_train, 
+    X_validation_scaled, y_validation, X_test_scaled, y_test, parameter_grid =
+    {
+    'C': [0.001, 0.01, 0.1, 1, 10, 100, 1000],
+    'penalty': ['l1', 'l2'],
+    'solver': ['newton-cg', 'lbfgs', 'liblinear']   
+    })
+
+    save_model(lr_model, 'LogisticRegression')
+
+    rfc_model = tune_regression_model_hyperparameters('RandomForestClassifier',  X_train_scaled, y_train, 
+    X_validation_scaled, y_validation, X_test_scaled, y_test, parameter_grid = 
+    {
+    'n_estimators': [50, 100, 250, 500],
+    'criterion': ['gini', 'entropy'],
+    'max_depth': [1, 3, 5, 7, 9],
+    'min_samples_split': [2, 4, 8, 16],
+    'min_samples_leaf': [1, 3, 5, 7, 9]
+    })
+
+    save_model(rfc_model, 'RandomForestClassifier')
+
+    gbc_model = tune_regression_model_hyperparameters('GradientBoostingClassifier',  X_train_scaled, y_train, 
+    X_validation_scaled, y_validation, X_test_scaled, y_test, parameter_grid = 
+    {
+    'n_estimators': [25, 50, 100,],
+    'learning_rate': [0.01, 0.1, 1],
+    'max_depth': [1, 3, 5],
+    'min_samples_split': [2, 4, 8],
+    'min_samples_leaf': [1, 3, 5],
+    'max_features': [1, 2, 3]
+    })
+
+    save_model(gbc_model, 'GradientBoostingClassifier')
+
+    dtc_model = tune_regression_model_hyperparameters('GradientBoostingClassifier',  X_train_scaled, y_train, 
+    X_validation_scaled, y_validation, X_test_scaled, y_test, parameter_grid = 
+    {
+    'max_depth': [1, 3, 5, 7],
+    'min_samples_split': [2, 4, 8],
+    'min_samples_leaf': [1, 3, 5],
+    'criterion': ['gini', 'entropy']
+    })
+
+    save_model(dtc_model, 'DecisionTreeClassifier')
+
+
+
+if __name__=='__main__':
+    evaluate_all_models()
+    
+    print(best_model)
