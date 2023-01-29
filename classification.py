@@ -1,3 +1,6 @@
+import json
+import joblib
+import os
 import numpy as np
 import pandas as pd
 from tabular_data import *
@@ -89,6 +92,52 @@ print(
 
 
 def tune_regression_model_hyperparameters(model_class, X_train_scaled, y_train, 
-    X_validation_scaled, y_validation, X_test_scaled, y_test, param_grid):
+    X_validation_scaled, y_validation, X_test_scaled, y_test, parameter_grid):
     np.random.seed(2)
 
+    models = {
+        'LogisticRegression': LogisticRegression,
+        'RandomForestClassifier': RandomForestClassifier,
+        'DecisionTreeClassifier': DecisionTreeClassifier,
+        'GradientBoostingClassifier': GradientBoostingClassifier
+    }
+
+    # perform grid search to find best hyperparameters
+    model = models[model_class]()
+    grid_search = GridSearchCV(estimator=model, param_grid=parameter_grid, scoring='accuracy')
+    grid_search.fit(X_train_scaled, y_train)
+    best_model = models[model_class](**grid_search.best_params_)
+    best_model.fit(X_train_scaled, y_train)
+
+    # use the best model from the grid search to predict the validation & test sets
+    y_validation_pred = best_model.predict(X_validation_scaled)
+    y_test_pred = best_model.predict(X_test_scaled)
+
+    # determine performance metrics
+    validation_acc = accuracy_score(y_validation, y_validation_pred)
+    test_acc = accuracy_score(y_test, y_test_pred)
+    validation_f1 = f1_score(y_validation, y_validation_pred, average='macro')
+    test_f1 = f1_score(y_test, y_test_pred, average='macro')
+
+    metrics = {'validation_acc': validation_acc, 'test_acc': test_acc, 'validation_f1': validation_f1, 'test_f1': test_f1}
+    best_model_data = [best_model, grid_search.best_params_, metrics]
+    print(best_model_data)
+
+    return best_model_data
+
+
+def save_model(best_model_data, model_name):
+    
+    model, hyperparameters, metrics = best_model_data
+
+    model_folder = 'models/classification/' + model_name
+    if not os.path.exists(model_folder):
+        os.makedirs(model_folder)
+    
+    joblib.dump(model, f'{model_folder}/model.joblib')
+
+    with open(f'{model_folder}/hyperparameters.json', 'w') as file:
+        json.dump(hyperparameters, file)
+
+    with open(f'{model_folder}/metrics.json', 'w') as file:
+        json.dump(metrics, file)
