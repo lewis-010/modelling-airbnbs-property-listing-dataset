@@ -181,7 +181,6 @@ def evaluate_all_models():
 
     save_model(sgd_model, 'SDGRegressor')
 
-    
     rfr_model = tune_regression_model_hyperparameters('RandomForestRegressor', X_train_scaled, y_train, 
         X_validation_scaled, y_validation, X_test_scaled, y_test, parameter_grid = 
     {
@@ -194,7 +193,6 @@ def evaluate_all_models():
 
     save_model(rfr_model, 'RandomForestRegressor')
 
-
     dtr_model = tune_regression_model_hyperparameters('DecisionTreeRegressor', X_train_scaled, y_train, 
         X_validation_scaled, y_validation, X_test_scaled, y_test, parameter_grid = 
     {
@@ -205,7 +203,6 @@ def evaluate_all_models():
     })
 
     save_model(dtr_model, 'DecisionTreeRegressor')
-
 
     gbr_model = tune_regression_model_hyperparameters('GradientBoostingRegressor', X_train_scaled, y_train, 
         X_validation_scaled, y_validation, X_test_scaled, y_test, parameter_grid = 
@@ -218,6 +215,7 @@ def evaluate_all_models():
     })
 
     save_model(gbr_model, 'GradientBoostingRegressor')
+
 
 def find_best_model(models_directory):
     best_model = None

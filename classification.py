@@ -10,7 +10,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import GridSearchCV, train_test_split
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, classification_report
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 
 # preprocessing steps
 np.random.seed(5)
@@ -142,7 +142,9 @@ def save_model(best_model_data, model_name):
     with open(f'{model_folder}/metrics.json', 'w') as file:
         json.dump(metrics, file)
 
+
 def evaluate_all_models():
+
     np.random.seed(5)
 
     lr_model = tune_regression_model_hyperparameters('LogisticRegression',  X_train_scaled, y_train, 
