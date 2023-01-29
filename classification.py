@@ -52,37 +52,43 @@ train_acc = accuracy_score(y_train, y_train_pred)
 test_acc = accuracy_score(y_test, y_test_pred)
 validation_acc = accuracy_score(y_validation, y_validation_pred)
 print(
-    f'baseline_train_acc: {train_acc}, '
-    f'baseline_test_acc: {test_acc}, '
-    f'baseline_val_acc: {validation_acc}'
+    f'baseline_train_acc: {round(train_acc, 4)}, '
+    f'baseline_test_acc: {round(test_acc, 4)}, '
+    f'baseline_val_acc: {round(validation_acc, 4)}'
 )
 
 # evaluate model using precision
-train_pres = precision_score(y_train, y_train_pred)
-test_pres = precision_score(y_test, y_test_pred)
-validation_pres = precision_score(y_validation, y_validation_pred)
+train_pres = precision_score(y_train, y_train_pred, average='macro')
+test_pres = precision_score(y_test, y_test_pred, average='macro')
+validation_pres = precision_score(y_validation, y_validation_pred, average='macro')
 print(
-    f'baseline train_pres: {train_pres}, '
-    f'baseline test_pres: {test_pres}, '
-    f'baseline val_pres: {validation_pres}'
+    f'baseline train_pres: {round(train_pres, 4)}, '
+    f'baseline test_pres: {round(test_pres, 4)}, '
+    f'baseline val_pres: {round(validation_pres, 4)}'
 )
 
 # evaluate model using F1 score
-train_f1 = f1_score(y_train, y_train_pred)
-test_f1 = f1_score(y_test, y_test_pred)
-validation_f1 = f1_score(y_validation, y_validation_pred)
+train_f1 = f1_score(y_train, y_train_pred, average='macro')
+test_f1 = f1_score(y_test, y_test_pred, average='macro')
+validation_f1 = f1_score(y_validation, y_validation_pred, average='macro')
 print(
-    f'baseline_train_f1: {train_f1}, '
-    f'baseline test_f1: {test_f1}, '
-    f'baseline_val_f1: {validation_f1}'
+    f'baseline_train_f1: {round(train_f1, 4)}, '
+    f'baseline test_f1: {round(test_f1, 4)}, '
+    f'baseline_val_f1: {round(validation_f1, 4)}'
 )
 
 # evaluate model using recall 
-train_recall = recall_score(y_train, y_train_pred)
-test_recall = recall_score(y_test, y_test_pred)
-validation_recall = recall_score(y_validation, y_validation_pred)
+train_recall = recall_score(y_train, y_train_pred, average='macro')
+test_recall = recall_score(y_test, y_test_pred, average='macro')
+validation_recall = recall_score(y_validation, y_validation_pred, average='macro')
 print(
-    f'baseline_train_recall: {train_recall}, '
-    f'baseline_test_recall: {test_recall}, '
-    f'baseline_val_recall: {validation_recall}'
+    f'baseline_train_recall: {round(train_recall, 4)}, '
+    f'baseline_test_recall: {round(test_recall, 4)}, '
+    f'baseline_val_recall: {round(validation_recall, 4)}'
 )
+
+
+def tune_regression_model_hyperparameters(model_class, X_train_scaled, y_train, 
+    X_validation_scaled, y_validation, X_test_scaled, y_test, param_grid):
+    np.random.seed(2)
+
