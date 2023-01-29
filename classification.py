@@ -150,7 +150,8 @@ def evaluate_all_models():
     {
     'C': [0.001, 0.01, 0.1, 1, 10, 100, 1000],
     'penalty': ['l1', 'l2'],
-    'solver': ['newton-cg', 'lbfgs', 'liblinear']   
+    'solver': ['newton-cg', 'lbfgs', 'liblinear'],
+    'max_iter': [100, 500, 1000]   
     })
 
     save_model(lr_model, 'LogisticRegression')
@@ -158,11 +159,11 @@ def evaluate_all_models():
     rfc_model = tune_regression_model_hyperparameters('RandomForestClassifier',  X_train_scaled, y_train, 
     X_validation_scaled, y_validation, X_test_scaled, y_test, parameter_grid = 
     {
-    'n_estimators': [50, 100, 250, 500],
+    'n_estimators': [50, 75, 100],
     'criterion': ['gini', 'entropy'],
-    'max_depth': [1, 3, 5, 7, 9],
-    'min_samples_split': [2, 4, 8, 16],
-    'min_samples_leaf': [1, 3, 5, 7, 9]
+    'max_depth': [30, 40, 50],
+    'min_samples_split': [2, 0.1, 0.2],
+    'min_samples_leaf': [1, 2, 3]
     })
 
     save_model(rfc_model, 'RandomForestClassifier')
@@ -183,10 +184,11 @@ def evaluate_all_models():
     dtc_model = tune_regression_model_hyperparameters('GradientBoostingClassifier',  X_train_scaled, y_train, 
     X_validation_scaled, y_validation, X_test_scaled, y_test, parameter_grid = 
     {
-    'max_depth': [1, 3, 5, 7],
-    'min_samples_split': [2, 4, 8],
+    'max_depth': [10, 20, 30],
+    'min_samples_split': [2, 4, 0.2, 0.4],
     'min_samples_leaf': [1, 3, 5],
-    'criterion': ['gini', 'entropy']
+    'criterion': ['gini', 'entropy'],
+    'max_features': [4, 6, 8]
     })
 
     save_model(dtc_model, 'DecisionTreeClassifier')
@@ -196,4 +198,4 @@ def evaluate_all_models():
 if __name__=='__main__':
     evaluate_all_models()
     
-    print(best_model)
+    
