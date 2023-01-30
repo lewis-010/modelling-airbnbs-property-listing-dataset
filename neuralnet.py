@@ -1,5 +1,7 @@
 import torch
+import torch.nn as nn
 import pandas as pd
+import torch.nn.functional as F
 from tabular_data import *
 from torch.utils.data import Dataset, DataLoader, random_split
 
@@ -17,7 +19,7 @@ class AirbnbNightlyPriceImageDataset(Dataset):
         features = torch.tensor(features, dtype=torch.float32)
         label = self.label[idx].item()
         return (features, label)
-
+ 
 dataset = AirbnbNightlyPriceImageDataset()
 
 # split dataset into training, validation & test sets
@@ -29,15 +31,20 @@ print(
     f'Number of samples in test set: {len(test_set)}'
 )
 
+print(dataset.features[0])
+print(dataset.label)
+
 # create dataloaders for each set
 train_loader = DataLoader(train_set, batch_size=8, shuffle=True)
 val_loader = DataLoader(validation_set, batch_size=8, shuffle=True)
 test_loader = DataLoader(test_set, batch_size=8, shuffle=True)
 
-example = next(iter(train_loader))
-print(example)
+dataset.features, dataset.label = next(iter(train_loader))
+print(dataset.features, dataset.label)
 
 
-class NeuralNet:
+class NN(nn.Module):
+
     def __init__(self) -> None:
-        pass
+        super().__init__()
+        # define layers 

@@ -25,6 +25,6 @@ if __name__=='__main__':
 
 def load_airbnb(df, label):
     df.drop(df.columns[0], axis=1, inplace=True)
-    features = df.select_dtypes(include=['int64', 'float64']).values
+    features = df.drop([label], axis=1).select_dtypes(include=['int64', 'float64']).values 
     label = df[label].values
     return features, label
