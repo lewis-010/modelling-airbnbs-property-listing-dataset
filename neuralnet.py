@@ -31,9 +31,6 @@ print(
     f'Number of samples in test set: {len(test_set)}'
 )
 
-print(dataset.features[0])
-print(dataset.label)
-
 # create dataloaders for each set
 train_loader = DataLoader(train_set, batch_size=8, shuffle=True)
 val_loader = DataLoader(validation_set, batch_size=8, shuffle=True)
@@ -43,8 +40,18 @@ dataset.features, dataset.label = next(iter(train_loader))
 print(dataset.features, dataset.label)
 
 
+# define neural network architecture
 class NN(nn.Module):
 
     def __init__(self) -> None:
         super().__init__()
-        # define layers 
+        # define layers
+        self.layers = torch.nn.Sequential(
+            torch.nn.Linear(11, 18),
+            torch.nn.ReLU(),
+            torch.nn.Linear(18, 1)
+        )
+
+    def forward(self, X):
+        # returns prediction by passing X through all layers
+        return self.layers(X)
