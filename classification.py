@@ -152,8 +152,8 @@ def evaluate_all_models():
     {
     'C': [0.001, 0.01, 0.1, 1, 10, 100, 1000],
     'penalty': ['l1', 'l2'],
-    'solver': ['newton-cg', 'lbfgs', 'liblinear'],
-    'max_iter': [100, 500, 1000]   
+    'max_iter': [100, 500, 1000],
+    'multi_class': ['multimodal']   
     })
 
     save_model(lr_model, 'LogisticRegression')
