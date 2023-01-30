@@ -22,7 +22,7 @@ dataset = AirbnbNightlyPriceImageDataset()
 
 # split dataset into training, validation & test sets
 train_set, test_set = random_split(dataset, [int(len(dataset) * 0.7), len(dataset) - int(len(dataset) * 0.7)])
-train_set, validation_set = random_split(train_set, [int(len(train_set) * 0.5), len(train_set) - int(len(train_set) * 0.5)])
+test_set, validation_set = random_split(test_set, [int(len(test_set) * 0.5), len(test_set) - int(len(test_set) * 0.5)])
 print(
     f'Number of samples in training set: {len(train_set)}, '
     f'Number of samples in validation set: {len(validation_set)}, '
