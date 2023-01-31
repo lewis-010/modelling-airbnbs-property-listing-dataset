@@ -55,7 +55,20 @@ class NN(nn.Module):
         return self.layers(X)
 
 model = NN()
-input_tensor = torch.tensor(dataset.features, dtype=torch.float32)
-model(input_tensor)
+# input_tensor = torch.tensor(dataset.features, dtype=torch.float32)
+# model(input_tensor)
 
+def train(model, epochs=10):
+    for epoch in range(epochs):
+        for batch in train_loader:
+            features, labels = batch
+            features = features.type(torch.float32)
+            print(features.dtype)
+            print(labels.dtype)
+            labels = torch.unsqueeze(labels, 1)
+            prediction = model(features)
+            loss = F.mse_loss(prediction, labels.float())
+            loss.backward()
+            print(loss)
 
+train(model)
