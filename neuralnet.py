@@ -4,6 +4,7 @@ import torch
 import json
 import time
 import yaml
+import numpy as np
 import torch.nn as nn
 import pandas as pd
 import torch.nn.functional as F
@@ -180,6 +181,7 @@ def generate_nn_configs():
     
     return hyper_dict_list
 
+
 def evaluate_all_models(hyper_dict):
     model = NN(hyper_dict)
     start_time = time.time()
@@ -193,8 +195,32 @@ def evaluate_all_models(hyper_dict):
     return model_data
 
 
-
-
 def find_best_nn():
+
+    best_val_rmse = np.inf
+    best_val_r2 = -np.inf
+
+
     hyper_dict_list = generate_nn_configs()
     for hyper_dict in hyper_dict_list:
+        model_data = evaluate_all_models(hyper_dict)
+        metrics = model_data[2]
+
+        rmse_loss = metrics['RMSE_loss']
+        rmse_validation_loss = rmse_loss[2]
+
+        r_squared = metrics['R_squared']
+        r_squared_val = r_squared[2]
+
+        if rmse_validation_loss < best_val_rmse and r_squared_val > best_val_r2:
+            best_val_rmse = rmse_validation_loss
+            best_val_r2 = r_squared_val
+            best_model_data = model_data
+        
+    best_model, best_hyper_dict, best_metrics = best_model_data
+    print(best_model)
+
+    save_model(best_model, best_hyper_dict, best_metrics)
+
+if __name__ == '__main__':
+    find_best_nn()
