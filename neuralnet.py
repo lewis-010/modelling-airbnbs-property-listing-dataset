@@ -1,8 +1,13 @@
+import os
 import torch
+import json
+import time
 import yaml
 import torch.nn as nn
 import pandas as pd
 import torch.nn.functional as F
+from datetime import datetime
+from sklearn.preprocessing import StandardScaler
 from tabular_data import *
 from torch.utils.data import Dataset, DataLoader, random_split
 from torch.utils.tensorboard import SummaryWriter
@@ -30,6 +35,7 @@ print(
     f'Test set: {len(test_set)} samples'
 )
 
+
 # create dataloaders for each set
 batch_size = 8
 train_loader = DataLoader(train_set, batch_size=batch_size, shuffle=True)
@@ -45,15 +51,15 @@ def get_nn_config():
     return hyper_dict
 
     
-
-
-
 # define neural network architecture
 class NN(nn.Module):
 
-    def __init__(self) -> None:
+    def __init__(self, config):
         super().__init__()
         # define layers
+        width = config['hidden_layer_wdith']
+        depth = config['depth']     
+
         self.layers = torch.nn.Sequential(
             torch.nn.Linear(11, 18),
             torch.nn.ReLU(),
@@ -64,12 +70,14 @@ class NN(nn.Module):
         # returns prediction by passing X through all layers
         return self.layers(X)
 
-model = NN()
+model = NN(get_nn_config())
 
 
-def train(model, epochs=10):
+def train(model, hyper_dict, epochs=10):
 
-    optimiser = torch.optim.Adam(model.parameters(), lr= 0.001)
+    optimiser_class = hyper_dict['optimiser']
+    optimiser_instance = getattr(torch.optim, optimiser_class)
+    optimiser = optimiser_instance(model.parameters(), lr=hyper_dict['learning_rate'])
 
     writer = SummaryWriter()
 
@@ -91,4 +99,77 @@ def train(model, epochs=10):
             writer.add_scalar('training_loss', loss.item(), batch_idx)
             batch_idx += 1
 
-train(model)
+
+def evaluate_model(model, training_duration, epochs):
+
+    scaler = StandardScaler()
+    metrics = {'training_duration': training_duration}
+    number_of_preds = epochs * len(train_set)
+    inference_latency = training_duration / number_of_preds
+    metrics['inference_latency'] = inference_latency
+
+    X_train = torch.tensor([data[0] for data in train_set])
+    scaler.fit(X_train)
+    X_train_scaled = scaler.transform(X_train)
+    y_train = torch.tensor([data[1] for data in train_set])
+    y_train_pred = model(X_train_scaled)
+    train_rmse_loss = torch.sqrt(F.mse_loss(y_train_pred, y_train.float))
+    train_r2_score = 1 - train_rmse_loss / torch.var(y_train.float())
+
+    print('Train_RMSE: ', train_rmse_loss.item())
+    print('Train_R2: ', train_r2_score.item())
+
+    X_test = torch.tensor([data[0] for data in test_set])
+    scaler.fit(X_test)
+    X_test_scaled = scaler.transform(X_test)
+    y_test = torch.tensor([data[1] for data in test_set])
+    y_test_pred = model(X_test_scaled)
+    test_rmse_loss = torch.sqrt(F.mse_loss(y_test_pred, y_test.float))
+    test_r2_score = 1 - test_rmse_loss / torch.var(y_test.float())
+
+    print('Test_RMSE: ', test_rmse_loss.item())
+    print('Test_R2: ', test_r2_score.item())
+
+
+    X_validation = torch.tensor([data[0] for data in validation_set])
+    scaler.fit(X_validation)
+    X_validation_scaled = scaler.transform(X_validation)
+    y_validation = torch.tensor([data[1] for data in validation_set])
+    y_validation_pred = model(X_validation_scaled)
+    validation_rmse_loss = torch.sqrt(F.mse_loss(y_validation_pred, y_validation.float))
+    validation_r2_score = 1 - validation_rmse_loss / torch.var(y_validation.float())
+
+    print('validation_RMSE: ', validation_rmse_loss.item())
+    print('validation_R2: ', validation_r2_score.item())
+
+
+    RMSE_loss = [train_rmse_loss, validation_rmse_loss, test_rmse_loss]
+    R_squared = [train_r2_score, validation_r2_score, test_r2_score]
+
+    metrics["RMSE_loss"] = [loss.item() for loss in RMSE_loss]
+    metrics["R_squared"] = [score.item() for score in R_squared]
+
+    return metrics
+
+
+def save_model(model, hyper_dict, metrics, model_folder):
+
+    model_name = datetime.now().strftime('%Y-%m-%d_%H:%M:%S')
+    model_folder = 'neural_networks/regression/' + model_name
+    if not os.path.exists(model_folder):
+        os.makedirs(model_folder)
+    
+    torch.save(model.state_dict(), f'{model_folder}/model.pt')
+
+    with open(f'{model_folder}/hyperparameters.json', 'w') as file:
+        json.dump(hyper_dict, file)
+
+    with open(f'{model_folder}/metrics.json', 'w') as file:
+        json.dump(metrics, file)
+
+
+
+
+
+train(model, hyper_dict=get_nn_config())
+get_nn_config()
