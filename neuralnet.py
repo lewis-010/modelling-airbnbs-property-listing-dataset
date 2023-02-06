@@ -52,15 +52,14 @@ class NN(nn.Module):
         return self.layers(X)
 
 model = NN()
-# input_tensor = torch.tensor(dataset.features, dtype=torch.float32)
-# model(input_tensor)
+
 
 def train(model, epochs=10):
 
     optimiser = torch.optim.Adam(model.parameters(), lr= 0.001)
 
     writer = SummaryWriter()
-    
+
     batch_idx = 0
 
     for epoch in range(epochs):
@@ -68,14 +67,30 @@ def train(model, epochs=10):
             features, labels = batch
             features = features.type(torch.float32)
             labels = torch.unsqueeze(labels, 1)
-            prediction = model(features)
-            loss = F.mse_loss(prediction, labels.float())
-            loss.backward()
-            print(loss.item())
+            train_pred = model(features)
+            train_loss = F.mse_loss(train_pred, labels.float())
+            train_loss.backward()
+            print(train_loss.item())
             # optimisation step
             optimiser.step() 
             optimiser.zero_grad()
-            writer.add_scalar('loss', loss.item(), batch_idx)
-            batch_idx += 1
+            # add loss metric to tensorboard
+            writer.add_scalar('training_loss', train_loss.item(), batch_idx)
+
+        for batch in val_loader:
+            features, labels = batch
+            features = features.type(torch.float32)
+            labels = torch.unsqueeze(labels, 1)
+            val_pred = model(features)
+            val_loss = F.mse_loss(val_pred, labels.float())
+            val_loss.backward()
+            print(val_loss.item())
+            # optimisation step
+            optimiser.step() 
+            optimiser.zero_grad()
+            # add loss metric to tensorboard
+            writer.add_scalar('training_loss', val_loss.item(), batch_idx)
+
+        batch_idx += 1
 
 train(model)
