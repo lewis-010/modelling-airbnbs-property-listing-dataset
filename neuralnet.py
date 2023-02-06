@@ -59,15 +59,16 @@ class NN(nn.Module):
 
     def __init__(self, config):
         super().__init__()
-        # define layers
+        # get values for width & depth from the param grid
         width = config['hidden_layer_width']
-        depth = config['depth']     
+        depth = config['depth']
 
-        self.layers = torch.nn.Sequential(
-            torch.nn.Linear(11, 18),
-            torch.nn.ReLU(),
-            torch.nn.Linear(18, 1)
-        )
+        # define the layers
+        layers = [torch.nn.Linear(11, width), torch.nn.ReLU()]
+        for hidden_layer in range(depth - 1):
+            layers.extend([torch.nn.Linear(width, width), torch.nn.ReLU()])
+        layers.extend([torch.nn.Linear(width, 1)])
+        self.layers = torch.nn.Sequential(*layers)
 
     def forward(self, X):
         # returns prediction by passing X through all layers
@@ -176,7 +177,7 @@ def save_model(model, hyper_dict, metrics):
 def generate_nn_configs():
     hyper_dict_list = []
     param_grid = {
-        'optimiser': ['Adam', 'SDG'],
+        'optimiser': ['Adam', 'AdamW'],
         'learning_rate': [0.0005, 0.001],
         'hidden_layer_width': [12, 16, 20],
         'depth': [3, 6, 9]
