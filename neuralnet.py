@@ -4,6 +4,7 @@ import torch
 import json
 import time
 import yaml
+import shutil
 import numpy as np
 import torch.nn as nn
 import pandas as pd
@@ -158,7 +159,7 @@ def evaluate_model(model, training_duration, epochs):
 
 def save_model(model, hyper_dict, metrics):
 
-    model_name = datetime.now().strftime('%Y-%m-%d_%H:%M:%S')
+    model_name = datetime.now().strftime('%Y-%m-%d_%H.%M.%S')
     model_folder = 'neural_networks/regression/' + model_name
     if not os.path.exists(model_folder):
         os.makedirs(model_folder)
@@ -176,7 +177,7 @@ def generate_nn_configs():
     hyper_dict_list = []
     param_grid = {
         'optimiser': ['Adam', 'SDG'],
-        'learning_rate': [0.0005, 0.001, 0.015],
+        'learning_rate': [0.0005, 0.001],
         'hidden_layer_width': [12, 16, 20],
         'depth': [3, 6, 9]
     }
@@ -222,9 +223,22 @@ def find_best_nn():
             best_model_data = model_data
         
     best_model, best_hyper_dict, best_metrics = best_model_data
+
+    best_model_folder = 'neural_networks/regression/best_model'
+    if os.path.exists(best_model_folder):
+        shutil.rmtree(best_model_folder)
+
+    os.makedirs(best_model_folder)
+
+    torch.save(best_model.state_dict(), f'{best_model_folder}/model.pt')
+    with open(f'{best_model_folder}/hyperparameters.json', 'w') as file:
+        json.dump(best_hyper_dict, file)
+
+    with open(f'{best_model_folder}/metrics.json', 'w') as file:
+        json.dump(best_metrics, file)
+
     print(best_model)
 
-    save_model(best_model, best_hyper_dict, best_metrics)
 
 if __name__ == '__main__':
     find_best_nn()
