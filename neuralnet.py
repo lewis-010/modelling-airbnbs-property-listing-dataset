@@ -67,30 +67,15 @@ def train(model, epochs=10):
             features, labels = batch
             features = features.type(torch.float32)
             labels = torch.unsqueeze(labels, 1)
-            train_pred = model(features)
-            train_loss = F.mse_loss(train_pred, labels.float())
-            train_loss.backward()
-            print(train_loss.item())
+            prediction = model(features)
+            loss = F.mse_loss(prediction, labels.float())
+            loss.backward()
+            print(loss.item())
             # optimisation step
             optimiser.step() 
             optimiser.zero_grad()
             # add loss metric to tensorboard
-            writer.add_scalar('training_loss', train_loss.item(), batch_idx)
-
-        for batch in val_loader:
-            features, labels = batch
-            features = features.type(torch.float32)
-            labels = torch.unsqueeze(labels, 1)
-            val_pred = model(features)
-            val_loss = F.mse_loss(val_pred, labels.float())
-            val_loss.backward()
-            print(val_loss.item())
-            # optimisation step
-            optimiser.step() 
-            optimiser.zero_grad()
-            # add loss metric to tensorboard
-            writer.add_scalar('training_loss', val_loss.item(), batch_idx)
-
-        batch_idx += 1
+            writer.add_scalar('training_loss', loss.item(), batch_idx)
+            batch_idx += 1
 
 train(model)
