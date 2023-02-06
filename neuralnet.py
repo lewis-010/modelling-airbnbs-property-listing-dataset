@@ -1,7 +1,7 @@
 import os
+import itertools
 import torch
 import json
-import time
 import yaml
 import torch.nn as nn
 import pandas as pd
@@ -167,7 +167,18 @@ def save_model(model, hyper_dict, metrics, model_folder):
     with open(f'{model_folder}/metrics.json', 'w') as file:
         json.dump(metrics, file)
 
-
+def generate_nn_configs():
+    hyper_dict_list = []
+    param_grid = {
+        'optimiser': ['Adam', 'SDG'],
+        'learning_rate': [0.0005, 0.001, 0.015],
+        'hidden_layer_width': [12, 16, 20],
+        'depth': [3, 6, 9]
+    }
+    for values in itertools.product(*param_grid.values()):
+        hyper_dict_list.append(dict(zip(param_grid, values)))
+    
+    return hyper_dict_list
 
 
 
