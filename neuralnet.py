@@ -2,6 +2,7 @@ import os
 import itertools
 import torch
 import json
+import time
 import yaml
 import torch.nn as nn
 import pandas as pd
@@ -69,8 +70,6 @@ class NN(nn.Module):
     def forward(self, X):
         # returns prediction by passing X through all layers
         return self.layers(X)
-
-model = NN(get_nn_config())
 
 
 def train(model, hyper_dict, epochs=10):
@@ -167,6 +166,7 @@ def save_model(model, hyper_dict, metrics, model_folder):
     with open(f'{model_folder}/metrics.json', 'w') as file:
         json.dump(metrics, file)
 
+
 def generate_nn_configs():
     hyper_dict_list = []
     param_grid = {
@@ -180,7 +180,21 @@ def generate_nn_configs():
     
     return hyper_dict_list
 
+def evaluate_all_models(hyper_dict):
+    model = NN(hyper_dict)
+    start_time = time.time()
+    train(model, hyper_dict, epochs=10)
+    end_time = time.time()
+    training_duration = end_time - start_time
+    metrics = evaluate_model(model, training_duration, epochs=10)
+    save_model(model, hyper_dict, metrics)
+    model_data = [model, hyper_dict, metrics]
+
+    return model_data
 
 
-train(model, hyper_dict=get_nn_config())
-get_nn_config()
+
+
+def find_best_nn():
+    hyper_dict_list = generate_nn_configs()
+    for hyper_dict in hyper_dict_list:
