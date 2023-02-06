@@ -4,6 +4,7 @@ import pandas as pd
 import torch.nn.functional as F
 from tabular_data import *
 from torch.utils.data import Dataset, DataLoader, random_split
+from torch.utils.tensorboard import SummaryWriter
 
 
 class AirbnbNightlyPriceImageDataset(Dataset):
@@ -58,6 +59,10 @@ def train(model, epochs=10):
 
     optimiser = torch.optim.Adam(model.parameters(), lr= 0.001)
 
+    writer = SummaryWriter()
+    
+    batch_idx = 0
+
     for epoch in range(epochs):
         for batch in train_loader:
             features, labels = batch
@@ -70,5 +75,7 @@ def train(model, epochs=10):
             # optimisation step
             optimiser.step() 
             optimiser.zero_grad()
+            writer.add_scalar('loss', loss.item(), batch_idx)
+            batch_idx += 1
 
 train(model)
