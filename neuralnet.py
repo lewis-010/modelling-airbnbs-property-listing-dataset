@@ -59,7 +59,7 @@ class NN(nn.Module):
     def __init__(self, config):
         super().__init__()
         # define layers
-        width = config['hidden_layer_wdith']
+        width = config['hidden_layer_width']
         depth = config['depth']     
 
         self.layers = torch.nn.Sequential(
@@ -108,35 +108,39 @@ def evaluate_model(model, training_duration, epochs):
     inference_latency = training_duration / number_of_preds
     metrics['inference_latency'] = inference_latency
 
-    X_train = torch.tensor([data[0] for data in train_set])
-    scaler.fit(X_train)
-    X_train_scaled = scaler.transform(X_train)
+    X_train = torch.stack([tuple[0] for tuple in train_set]).type(torch.float32)
+    # scaler.fit(X_train)
+    # X_train_scaled = scaler.transform(X_train)
+    y_train = torch.stack([torch.tensor(tuple[1]) for tuple in train_set])
+    y_train = torch.unsqueeze(y_train, 1)
     y_train = torch.tensor([data[1] for data in train_set])
-    y_train_pred = model(X_train_scaled)
-    train_rmse_loss = torch.sqrt(F.mse_loss(y_train_pred, y_train.float))
+    y_train_pred = model(X_train)
+    train_rmse_loss = torch.sqrt(F.mse_loss(y_train_pred, y_train.float()))
     train_r2_score = 1 - train_rmse_loss / torch.var(y_train.float())
 
     print('Train_RMSE: ', train_rmse_loss.item())
     print('Train_R2: ', train_r2_score.item())
 
-    X_test = torch.tensor([data[0] for data in test_set])
-    scaler.fit(X_test)
-    X_test_scaled = scaler.transform(X_test)
-    y_test = torch.tensor([data[1] for data in test_set])
-    y_test_pred = model(X_test_scaled)
-    test_rmse_loss = torch.sqrt(F.mse_loss(y_test_pred, y_test.float))
+    X_test = torch.stack([tuple[0] for tuple in test_set]).type(torch.float32)
+    # scaler.fit(X_test)
+    # X_test_scaled = scaler.transform(X_test)
+    y_test = torch.stack([torch.tensor(tuple[1]) for tuple in test_set])
+    y_test = torch.unsqueeze(y_test, 1)
+    y_test_pred = model(X_test)
+    test_rmse_loss = torch.sqrt(F.mse_loss(y_test_pred, y_test.float()))
     test_r2_score = 1 - test_rmse_loss / torch.var(y_test.float())
 
     print('Test_RMSE: ', test_rmse_loss.item())
     print('Test_R2: ', test_r2_score.item())
 
 
-    X_validation = torch.tensor([data[0] for data in validation_set])
-    scaler.fit(X_validation)
-    X_validation_scaled = scaler.transform(X_validation)
-    y_validation = torch.tensor([data[1] for data in validation_set])
-    y_validation_pred = model(X_validation_scaled)
-    validation_rmse_loss = torch.sqrt(F.mse_loss(y_validation_pred, y_validation.float))
+    X_validation = torch.stack([tuple[0] for tuple in validation_set]).type(torch.float32)
+    # scaler.fit(X_validation)    
+    # X_validation_scaled = scaler.transform(X_validation)
+    y_validation = torch.stack([torch.tensor(tuple[1]) for tuple in validation_set])
+    y_validation = torch.unsqueeze(y_validation, 1)
+    y_validation_pred = model(X_validation)
+    validation_rmse_loss = torch.sqrt(F.mse_loss(y_validation_pred, y_validation.float()))
     validation_r2_score = 1 - validation_rmse_loss / torch.var(y_validation.float())
 
     print('validation_RMSE: ', validation_rmse_loss.item())
@@ -152,7 +156,7 @@ def evaluate_model(model, training_duration, epochs):
     return metrics
 
 
-def save_model(model, hyper_dict, metrics, model_folder):
+def save_model(model, hyper_dict, metrics):
 
     model_name = datetime.now().strftime('%Y-%m-%d_%H:%M:%S')
     model_folder = 'neural_networks/regression/' + model_name
