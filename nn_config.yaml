@@ -1,0 +1,4 @@
+optimiser: Adam
+learning_rate: 0.001
+hidden_layer_wdith: 22
+depth: 3

@@ -1,4 +1,5 @@
 import torch
+import yaml
 import torch.nn as nn
 import pandas as pd
 import torch.nn.functional as F
@@ -34,6 +35,18 @@ batch_size = 8
 train_loader = DataLoader(train_set, batch_size=batch_size, shuffle=True)
 val_loader = DataLoader(validation_set, batch_size=batch_size, shuffle=True)
 test_loader = DataLoader(test_set, batch_size=batch_size, shuffle=True)
+
+
+def get_nn_config():
+    with open("nn_config.yaml", "r") as stream:
+        hyper_dict = yaml.safe_load(stream)
+        print(hyper_dict)
+
+    return hyper_dict
+
+    
+
+
 
 # define neural network architecture
 class NN(nn.Module):
