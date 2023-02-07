@@ -32,20 +32,6 @@ class AirbnbBedroomDataset(Dataset):
         self.features = pd.concat([numerical_df, category_df], axis=1)
         self.label = self.data['bedrooms']
 
-        print(f'numerical data is type {type(numerical_data)}')
-        print(f'numerical df is type {type(numerical_df)}')
-        print(f'category encoded is type {type(category_encoded)}')
-        print(f'category df is type {type(category_df)}')
-
-        print(numerical_data)
-        print(numerical_df)
-
-        print(f'Features is type {type(self.features)}')
-        print(self.features)
-        print(f'Label is type {type(self.label)}')
-        print(self.label)
-
-
     def __getitem__(self, idx):
         return (torch.tensor(self.features.iloc[idx].values), self.label[idx])
 
@@ -69,6 +55,7 @@ train_loader = DataLoader(train_set, batch_size=batch_size, shuffle=True)
 val_loader = DataLoader(validation_set, batch_size=batch_size, shuffle=True)
 test_loader = DataLoader(test_set, batch_size=batch_size, shuffle=True)
 
+
 # define neural network architecture
 class NN(nn.Module):
 
@@ -80,7 +67,7 @@ class NN(nn.Module):
         dropout_prob = config.get('dropout_prob', 0) # add optional dropout probability
 
         # define the layers
-        layers = [torch.nn.Linear(11, width), torch.nn.ReLU()]
+        layers = [torch.nn.Linear(12, width), torch.nn.ReLU()]
         for hidden_layer in range(depth - 1):
             layers.extend([torch.nn.Dropout(dropout_prob), torch.nn.Linear(width, width), torch.nn.ReLU()]) # add dropout layer
         layers.extend([torch.nn.Linear(width, 1)])
@@ -145,7 +132,6 @@ def evaluate_model(model, training_duration, epochs):
     print('Test_RMSE: ', test_rmse_loss.item())
     print('Test_R2: ', test_r2_score.item())
 
-
     X_validation = torch.stack([tuple[0] for tuple in validation_set]).type(torch.float32)
     y_validation = torch.stack([torch.tensor(tuple[1]) for tuple in validation_set])
     y_validation = torch.unsqueeze(y_validation, 1)
@@ -155,7 +141,6 @@ def evaluate_model(model, training_duration, epochs):
 
     print('validation_RMSE: ', validation_rmse_loss.item())
     print('validation_R2: ', validation_r2_score.item())
-
 
     RMSE_loss = [train_rmse_loss, validation_rmse_loss, test_rmse_loss]
     R_squared = [train_r2_score, validation_r2_score, test_r2_score]
@@ -169,7 +154,7 @@ def evaluate_model(model, training_duration, epochs):
 def save_model(model, hyper_dict, metrics):
 
     model_name = datetime.now().strftime('%Y-%m-%d_%H.%M.%S')
-    model_folder = 'neural_networks/regression/' + model_name
+    model_folder = 'neural_networks/regression_bedrooms/' + model_name
     if not os.path.exists(model_folder):
         os.makedirs(model_folder)
     
@@ -215,7 +200,6 @@ def find_best_nn():
     best_val_rmse = np.inf
     best_val_r2 = -np.inf
 
-
     hyper_dict_list = generate_nn_configs()
     for hyper_dict in hyper_dict_list:
         model_data = evaluate_all_models(hyper_dict)
@@ -234,7 +218,7 @@ def find_best_nn():
         
     best_model, best_hyper_dict, best_metrics = best_model_data
 
-    best_model_folder = 'neural_networks/regression/best_model'
+    best_model_folder = 'neural_networks/regression_bedrooms/best_model'
     if os.path.exists(best_model_folder):
         shutil.rmtree(best_model_folder)
 
