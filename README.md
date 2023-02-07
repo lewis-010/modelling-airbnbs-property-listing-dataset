@@ -90,3 +90,27 @@ grid_search = GridSearchCV(estimator=model, param_grid=parameter_grid, scoring=[
 ```
 - After the optimal hyperparameters had been determined for each model, they were all saved in json files alongisde the performance metrics.
 - Another function was then used to return the best model from the 4 available; in this instance it was the Random Forest Regressor model.
+
+## Milestone 4
+- The next model to be trained was a classification model, with the label being the *'Category'* column in the dataset. 
+- As with the previous regression model, a baseline model was created and hyperparameters selected with a grid search.
+- However, the scoring metrics differ for classification models.
+    - Accuracy and F1 scores for the validation set were used to determine the most effective model.
+```Python
+def find_best_model(models_directory):
+    best_model = None
+    best_acc = -float('inf')
+    best_f1 = float('inf')
+
+    for model_name in os.listdir(models_directory):
+        metrics_path = os.path.join(models_directory, model_name, 'metrics.json')
+        with open(metrics_path) as f:
+            metrics = json.load(f)
+            val_acc = metrics['validation_acc'] 
+            val_f1 = metrics['validation_f1']
+
+            if val_acc > best_acc and val_f1 > best_f1:
+                best_model = model_name
+                best_acc = val_acc
+                best_f1 = val_f1
+```
