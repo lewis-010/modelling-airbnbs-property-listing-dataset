@@ -1,0 +1,1 @@
+{"optimiser": "AdamW", "learning_rate": 0.0005, "hidden_layer_width": 5, "depth": 4, "dropout_prob": 0.2}

@@ -10,7 +10,6 @@ import torch.nn as nn
 import pandas as pd
 import torch.nn.functional as F
 from datetime import datetime
-from sklearn.preprocessing import StandardScaler
 from tabular_data import *
 from torch.utils.data import Dataset, DataLoader, random_split
 from torch.utils.tensorboard import SummaryWriter
@@ -59,20 +58,22 @@ class NN(nn.Module):
 
     def __init__(self, config):
         super().__init__()
-        # get values for width & depth from the param grid
+        # get values for width & depth from the config
         width = config['hidden_layer_width']
         depth = config['depth']
+        dropout_prob = config.get('dropout_prob', 0) # add optional dropout probability
 
         # define the layers
         layers = [torch.nn.Linear(11, width), torch.nn.ReLU()]
         for hidden_layer in range(depth - 1):
-            layers.extend([torch.nn.Linear(width, width), torch.nn.ReLU()])
+            layers.extend([torch.nn.Dropout(dropout_prob), torch.nn.Linear(width, width), torch.nn.ReLU()]) # add dropout layer
         layers.extend([torch.nn.Linear(width, 1)])
         self.layers = torch.nn.Sequential(*layers)
 
     def forward(self, X):
-        # returns prediction by passing X through all layers
         return self.layers(X)
+
+    
 
 
 def train(model, hyper_dict, epochs=10):
@@ -104,15 +105,12 @@ def train(model, hyper_dict, epochs=10):
 
 def evaluate_model(model, training_duration, epochs):
 
-    scaler = StandardScaler()
     metrics = {'training_duration': training_duration}
     number_of_preds = epochs * len(train_set)
     inference_latency = training_duration / number_of_preds
     metrics['inference_latency'] = inference_latency
 
     X_train = torch.stack([tuple[0] for tuple in train_set]).type(torch.float32)
-    # scaler.fit(X_train)
-    # X_train_scaled = scaler.transform(X_train)
     y_train = torch.stack([torch.tensor(tuple[1]) for tuple in train_set])
     y_train = torch.unsqueeze(y_train, 1)
     y_train = torch.tensor([data[1] for data in train_set])
@@ -124,8 +122,6 @@ def evaluate_model(model, training_duration, epochs):
     print('Train_R2: ', train_r2_score.item())
 
     X_test = torch.stack([tuple[0] for tuple in test_set]).type(torch.float32)
-    # scaler.fit(X_test)
-    # X_test_scaled = scaler.transform(X_test)
     y_test = torch.stack([torch.tensor(tuple[1]) for tuple in test_set])
     y_test = torch.unsqueeze(y_test, 1)
     y_test_pred = model(X_test)
@@ -137,8 +133,6 @@ def evaluate_model(model, training_duration, epochs):
 
 
     X_validation = torch.stack([tuple[0] for tuple in validation_set]).type(torch.float32)
-    # scaler.fit(X_validation)    
-    # X_validation_scaled = scaler.transform(X_validation)
     y_validation = torch.stack([torch.tensor(tuple[1]) for tuple in validation_set])
     y_validation = torch.unsqueeze(y_validation, 1)
     y_validation_pred = model(X_validation)
@@ -179,8 +173,9 @@ def generate_nn_configs():
     param_grid = {
         'optimiser': ['Adam', 'AdamW'],
         'learning_rate': [0.0005, 0.001],
-        'hidden_layer_width': [12, 16, 20],
-        'depth': [3, 6, 9]
+        'hidden_layer_width': [5, 10, 15],
+        'depth': [2, 3, 4],
+        'dropout_prob': [0.2, 0.5, 0.75]
     }
     for values in itertools.product(*param_grid.values()):
         hyper_dict_list.append(dict(zip(param_grid, values)))
