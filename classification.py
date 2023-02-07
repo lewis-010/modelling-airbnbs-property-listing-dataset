@@ -150,10 +150,11 @@ def evaluate_all_models():
     lr_model = tune_regression_model_hyperparameters('LogisticRegression',  X_train_scaled, y_train, 
     X_validation_scaled, y_validation, X_test_scaled, y_test, parameter_grid =
     {
-    'C': [0.001, 0.01, 0.1, 1, 10, 100, 1000],
-    'penalty': ['l1', 'l2'],
+    'C': [0.001, 0.01, 0.1, 1, 10],
+    'penalty': ['l2'],
     'max_iter': [100, 500, 1000],
-    'multi_class': ['multimodal']   
+    'multi_class': ['ovr'],
+    'solver': ['lbfgs']   
     })
 
     save_model(lr_model, 'LogisticRegression')

@@ -114,3 +114,32 @@ def find_best_model(models_directory):
                 best_acc = val_acc
                 best_f1 = val_f1
 ```
+- To prevent overfitting, the features for this model were normalized with *StandardScalar* function from Scikit-learn. 
+- Cross-validation was also used to help improve the performance of the models.
+
+## Milestone 5
+- The final type of model that was created in this project was a neural network. 
+- [PyTorch](https://pytorch.org/) was used to create the architecture of the neural network. 
+- In order to imrpove it's performance and rpevent overfitting, a regularisation method was used, known as dropout.
+    - The aim including this was to reduce the complexity of the model and make it better suited to unseen data. 
+```Python 
+class NN(nn.Module):
+
+    def __init__(self, config):
+        super().__init__()
+        # get values for width & depth from the config
+        width = config['hidden_layer_width']
+        depth = config['depth']
+        dropout_prob = config.get('dropout_prob', 0)
+
+        # define the layers
+        layers = [torch.nn.Linear(11, width), torch.nn.ReLU()]
+        for hidden_layer in range(depth - 1):
+            layers.extend([torch.nn.Dropout(dropout_prob), torch.nn.Linear(width, width), torch.nn.ReLU()]) # add dropout layer
+        layers.extend([torch.nn.Linear(width, 1)])
+        self.layers = torch.nn.Sequential(*layers)
+
+    def forward(self, X):
+        return self.layers(X)
+```
+- Having built the architechture of the neural network and the relevant training loops that can be seen in *neuralnet.py*, the [Tensorboard](https://www.tensorflow.org/tensorboard) visualisation toolkit was used to view how the losses of the model changed as it was trained. 
