@@ -11,22 +11,48 @@ import pandas as pd
 import torch.nn.functional as F
 from datetime import datetime
 from tabular_data import *
+from sklearn.preprocessing import LabelEncoder
 from torch.utils.data import Dataset, DataLoader, random_split
 from torch.utils.tensorboard import SummaryWriter
 
 
-class AirbnbNightlyPriceImageDataset(Dataset):
+class AirbnbBedroomDataset(Dataset):
     def __init__(self):
         self.data = pd.read_csv('tabular_data/clean_tabular_data.csv')
-        self.features, self.label = load_airbnb(self.data, 'Price_Night')
-    
+        numerical_data = load_airbnb(self.data, 'bedrooms')
+        category_column = self.data['Category']
+        category_data = category_column.unique()
+        encoder = LabelEncoder()
+        category_encoded = encoder.fit_transform(category_column)
+
+        numerical_data = numerical_data[0]
+        numerical_df = pd.DataFrame(data=numerical_data, columns=['bedrooms_' + str(i) for i in range(numerical_data.shape[1])])
+        category_df = pd.DataFrame(data=category_encoded, columns=['Category_Encoded'])
+      
+        self.features = pd.concat([numerical_df, category_df], axis=1)
+        self.label = self.data['bedrooms']
+
+        print(f'numerical data is type {type(numerical_data)}')
+        print(f'numerical df is type {type(numerical_df)}')
+        print(f'category encoded is type {type(category_encoded)}')
+        print(f'category df is type {type(category_df)}')
+
+        print(numerical_data)
+        print(numerical_df)
+
+        print(f'Features is type {type(self.features)}')
+        print(self.features)
+        print(f'Label is type {type(self.label)}')
+        print(self.label)
+
+
     def __getitem__(self, idx):
-        return (torch.tensor(self.features[idx]), self.label[idx])
+        return (torch.tensor(self.features.iloc[idx].values), self.label[idx])
 
     def __len__(self):
         return len(self.features)
 
-dataset = AirbnbNightlyPriceImageDataset()
+dataset = AirbnbBedroomDataset()
 
 # split dataset into training, validation & test sets
 train_set, test_set = random_split(dataset, [int(len(dataset) * 0.7), len(dataset) - int(len(dataset) * 0.7)])
@@ -37,22 +63,12 @@ print(
     f'Test set: {len(test_set)} samples'
 )
 
-
 # create dataloaders for each set
 batch_size = 8
 train_loader = DataLoader(train_set, batch_size=batch_size, shuffle=True)
 val_loader = DataLoader(validation_set, batch_size=batch_size, shuffle=True)
 test_loader = DataLoader(test_set, batch_size=batch_size, shuffle=True)
 
-
-def get_nn_config():
-    with open("nn_config.yaml", "r") as stream:
-        hyper_dict = yaml.safe_load(stream)
-        print(hyper_dict)
-
-    return hyper_dict
-
-    
 # define neural network architecture
 class NN(nn.Module):
 
