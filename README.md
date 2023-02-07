@@ -142,4 +142,17 @@ class NN(nn.Module):
     def forward(self, X):
         return self.layers(X)
 ```
-- Having built the architechture of the neural network and the relevant training loops that can be seen in *neuralnet.py*, the [Tensorboard](https://www.tensorflow.org/tensorboard) visualisation toolkit was used to view how the losses of the model changed as it was trained. 
+- A diagram of the neural network is shown below.
+
+![neural_network](neural_network.png)
+
+
+- Having built the architechture of the neural network and the relevant training loops that can be seen in *neuralnet.py*, the [Tensorboard](https://www.tensorflow.org/tensorboard) visualisation toolkit was used to view how the losses of the model changed as it was trained.
+- The 1st image below displays the training loss for all of thhe models. 
+- The 2nd image displays the best parameterised neural network. 
+
+![training_loss_graph](training_loss_graph.png)
+![best_training_loss_graph](bst_training_loss_graph.png)
+
+- The neural network was by far the most accurate model of the regression models built in this project, as detailed in the metrics inside the *best_model* inside *neural_networks*.
+- This may be due to the model being able to better capture the relationship between the many features and single label, whereas the linear regression models may have struggles slightly. 
