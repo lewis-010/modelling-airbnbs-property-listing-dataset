@@ -8,6 +8,7 @@ import shutil
 import numpy as np
 import torch.nn as nn
 import pandas as pd
+import matplotlib.pyplot as plt
 import torch.nn.functional as F
 from datetime import datetime
 from tabular_data import *
@@ -235,4 +236,29 @@ def find_best_nn():
 
 
 if __name__ == '__main__':
-    find_best_nn()
+    with open('neural_networks/regression_bedrooms/best_model/hyperparameters.json', 'r') as file:
+        config = json.load(file)
+
+    model = NN(config)
+    model.load_state_dict(torch.load('neural_networks/regression_bedrooms/best_model/model.pt'))
+    model.eval()
+
+    # preprocessing steps
+    test_dataset = AirbnbBedroomDataset()
+    test_loader = DataLoader(test_set, batch_size=batch_size, shuffle=False)
+
+    # get predictions from the model
+    predictions = []
+    with torch.no_grad():
+        for inputs, labels in test_loader:
+            inputs = inputs.float()
+            outputs = model(inputs)
+            predictions.append(outputs)
+            
+    # convert the predictions list to a numpy array & display as graph
+    predictions = torch.cat(predictions, dim=0).numpy()
+    plt.plot(predictions)
+    plt.title('Neural network')
+    plt.xlabel('Sample')
+    plt.ylabel('Number of Bedrooms')
+    plt.show()
