@@ -193,6 +193,7 @@ class AirbnbBedroomDataset(Dataset):
 ![bedrooms_training_loss.png](visualisations/bedrooms_training_loss.png)
 
 - Using matplotlib we can see the predicted values using the neural network are what would be expected.
+    - A vast majority of samples have 1 bedroom with a handful having > 3.
 - This is also backed up by the very strong R2 and RMSE scores in the performance metrics file for the best model.
 
 ![bedrooms_neural_network](visualisations/bedrooms_nerual_network.png)
