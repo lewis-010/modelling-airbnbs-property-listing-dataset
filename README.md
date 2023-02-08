@@ -156,3 +156,38 @@ class NN(nn.Module):
 
 - The neural network was by far the most accurate model of the regression models built in this project, as detailed in the metrics inside the *best_model* inside *neural_networks*.
 - This may be due to the model being able to better capture the relationship between the many features and single label, whereas the linear regression models may have struggled slightly. 
+
+## Milestone 6
+- The final part of this project was to apply the previously built models to a new use-case with regards to the AirBnB dataset (*clean_tabular_data.csv*).
+- The chosen target for this was the variable 'bedrooms'.
+- Another difference was the inclusion of 'category' as a numerical feature. 
+- Since this column existed as a string for each sample, the values needed to be encoded and the dataframe then concatanated onto the existing features dataframe. 
+- As you can see below, the features dataset, for the neural network in this case, is a combination of the two dataframes (*reuse_nn.py*).
+```Python 
+class AirbnbBedroomDataset(Dataset):
+    def __init__(self):
+        self.data = pd.read_csv('tabular_data/clean_tabular_data.csv')
+        numerical_data = load_airbnb(self.data, 'bedrooms')
+        category_column = self.data['Category']
+        category_data = category_column.unique()
+        encoder = LabelEncoder()
+        category_encoded = encoder.fit_transform(category_column)
+
+        numerical_data = numerical_data[0]
+        numerical_df = pd.DataFrame(data=numerical_data, columns=['bedrooms_' + str(i) for i in range(numerical_data.shape[1])])
+        category_df = pd.DataFrame(data=category_encoded, columns=['Category_Encoded'])
+      
+        self.features = pd.concat([numerical_df, category_df], axis=1)
+        self.label = self.data['bedrooms']
+
+    def __getitem__(self, idx):
+        return (torch.tensor(self.features.iloc[idx].values), self.label[idx])
+
+    def __len__(self):
+        return len(self.features)
+```
+- A similar loss curve to those shown previously can be seen in the image below. 
+- This indicates the neural network was able to suitably and accurately predict a different label.
+- The metrics for the best model neural network (*neural_networks/regression_bedrooms/best_model*) were also very similar to those seen earlier. 
+
+![bedrooms_training_loss.png](visualisations/bedrooms_training_loss.png)
