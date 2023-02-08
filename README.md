@@ -191,3 +191,14 @@ class AirbnbBedroomDataset(Dataset):
 - The metrics for the best model neural network (*neural_networks/regression_bedrooms/best_model*) were also very similar to those seen earlier. 
 
 ![bedrooms_training_loss.png](visualisations/bedrooms_training_loss.png)
+
+- Using matplotlib we can see the predicted values using the neural network are what would be expected.
+- This is also backed up by the very strong R2 and RMSE scores in the performance metrics file for the best model.
+
+![bedrooms_neural_network](visualisations/bedrooms_nerual_network.png)
+- This reuse case was also applied to the linear regresison model that was built in Milestone 3. 
+- The inclusion of the encoded column 'Category' as a feature was also applied. 
+- A scatter graph displaying the predicted results and the actual results shows a strong correlation between the two.
+- Again, the best linear regression model for this problem was determined to be the Random Forest Regressor, just as in the previous linear regression instance that predicted the price per night. 
+
+ ![bedrooms_random_forest](visualisations/bedrooms_random_forest.png)
