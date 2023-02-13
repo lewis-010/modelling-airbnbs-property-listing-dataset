@@ -16,11 +16,25 @@ from torch.utils.tensorboard import SummaryWriter
 
 
 class AirbnbNightlyPriceImageDataset(Dataset):
+    '''
+    A class to represent the dataset used in the neural network model below.
+    '''
     def __init__(self):
+        '''Selects the necessary features and label from the loaded dataset.'''
         self.data = pd.read_csv('tabular_data/clean_tabular_data.csv')
         self.features, self.label = load_airbnb(self.data, 'Price_Night')
     
     def __getitem__(self, idx):
+        '''
+        Parameters
+        ----------
+        idx:
+            The index of the specified sample.
+            
+        Returns
+        -------
+        Returns the features as a tensor and the label as a scalar.
+        '''
         return (torch.tensor(self.features[idx]), self.label[idx])
 
     def __len__(self):
@@ -55,9 +69,21 @@ def get_nn_config():
     
 # define neural network architecture
 class NN(nn.Module):
+    '''
+    A class to represent the neural network used for forecasting the label.
+    '''
 
     def __init__(self, config):
         super().__init__()
+        '''
+        Constructs the neural network architecture.
+
+        Parameters
+        ----------
+        Config: list
+            A list of dictionaries of all possible hyperparameter combinations.
+
+        '''
         # get values for width & depth from the config
         width = config['hidden_layer_width']
         depth = config['depth']
@@ -71,10 +97,23 @@ class NN(nn.Module):
         self.layers = torch.nn.Sequential(*layers)
 
     def forward(self, X):
+        '''
+        Moves forward through the layers of the neural network.
+        '''
         return self.layers(X)
 
 
 def train(model, hyper_dict, epochs=10):
+    '''
+    Trains the neural network to predcict the label.
+
+    Parameters
+    ----------
+    model: 
+        The neural network class and it's architecture.
+    hyper_dict: dict
+        A dictionary of the hyperparameters of the neural network.   
+    '''
 
     optimiser_class = hyper_dict['optimiser']
     optimiser_instance = getattr(torch.optim, optimiser_class)
@@ -102,6 +141,23 @@ def train(model, hyper_dict, epochs=10):
 
 
 def evaluate_model(model, training_duration, epochs):
+    '''
+    Evaluates the model based on specific metrics.
+
+    Parameters
+    ----------
+    model:
+        The neural network class and it's architecture
+    training_duration: int
+        The length of time it took to train the model.
+    epochs: int
+        The number of lopps for the training function.
+
+    Returns
+    -------
+    metrics: dict
+        A dictionary containing the performance metrics for the corresponding model and hyperparameters.
+    '''
 
     metrics = {'training_duration': training_duration}
     number_of_preds = epochs * len(train_set)
@@ -151,7 +207,19 @@ def evaluate_model(model, training_duration, epochs):
 
 
 def save_model(model, hyper_dict, metrics):
+    '''
+    Saves the trained model.
 
+    Parameters
+    ----------
+    model: 
+        The neural network class and it's architecture.
+    hyper_dict: dict
+        A dictionary of the model's hyperparameters.
+    metrics: dict
+        A dictionary of the model's performance metrics.
+
+    '''
     model_name = datetime.now().strftime('%Y-%m-%d_%H.%M.%S')
     model_folder = 'neural_networks/regression/' + model_name
     if not os.path.exists(model_folder):
@@ -167,6 +235,14 @@ def save_model(model, hyper_dict, metrics):
 
 
 def generate_nn_configs():
+    '''
+    Generates the hyperparameter configurations for the neural network.
+
+    Returns
+    -------
+    hyper_dict_list: list
+        A list of hyperparameter dictionaries.
+    '''
     hyper_dict_list = []
     param_grid = {
         'optimiser': ['Adam', 'AdamW'],
@@ -182,6 +258,14 @@ def generate_nn_configs():
 
 
 def evaluate_all_models(hyper_dict):
+    '''
+    Evaluates all neural network models with the different hyperparameter dictionaries.
+
+    Retruns
+    -------
+    model_data: list
+        A list containing the model class, hyperparameters and performance metrics for the corresponding model.
+    '''
     model = NN(hyper_dict)
     start_time = time.time()
     train(model, hyper_dict, epochs=10)
@@ -195,7 +279,10 @@ def evaluate_all_models(hyper_dict):
 
 
 def find_best_nn():
-
+    '''
+    Finds the best neural network from all of the trained models.
+    
+    '''
     best_val_rmse = np.inf
     best_val_r2 = -np.inf
 

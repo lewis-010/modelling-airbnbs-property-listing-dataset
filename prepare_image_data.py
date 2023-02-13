@@ -3,6 +3,7 @@ import os
 from PIL import Image
 
 def download_images():
+    '''Downloads image data from an AWS S3 bucket.'''
 # Set up the S3 client
     s3 = boto3.client('s3')
 
@@ -23,6 +24,7 @@ def download_images():
 
 
 def resize_images():
+    '''Resizes all of the images to the size of the smallest one whilst maintaining aspect ratio.'''
     # Set the base directory where the subdirectories are located
     base_dir = r'C:\Users\lcox1\Documents\VSCode\AiCore\Data science\images'
 
