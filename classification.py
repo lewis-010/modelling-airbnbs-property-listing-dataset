@@ -93,6 +93,33 @@ print(
 
 def tune_regression_model_hyperparameters(model_class, X_train_scaled, y_train, 
     X_validation_scaled, y_validation, X_test_scaled, y_test, parameter_grid):
+    '''
+    Tunes the hyperparameters for a specified classification model class.
+
+    Parameters
+    ----------
+    model_class:
+        The class of regression model to be tuned.
+    X_train_scaled:
+        The normalized training set for the features.
+    y_train:
+        The training set for the label.
+    X_validation scaled:
+        The normalized validation set for the features.
+    y_validation:
+        The validation set for the label.
+    X_test_scaled:
+        The normalized testing set for the features.
+    y_test:
+        The testing set for the label.
+    parameter_grid: dict
+        A dictionary of specified hyperparameters corresponding to the model_class.
+
+    Returns
+    -------
+    best_model_data: list
+        A list of the best model_class, it's best parameters and performance metrics.
+    '''
     np.random.seed(5)
 
     models = {
@@ -127,7 +154,16 @@ def tune_regression_model_hyperparameters(model_class, X_train_scaled, y_train,
 
 
 def save_model(best_model_data, model_name):
-    
+    '''
+    Saves the best model for each model_class.
+
+    Parameters
+    ----------
+    best_model_data: list
+        A list of the best model_class, it's best parameters and performance metrics.
+    model_name: str
+        The name of the model_class being saved.
+    '''
     model, hyperparameters, metrics = best_model_data
 
     model_folder = 'models/classification/' + model_name
@@ -144,7 +180,9 @@ def save_model(best_model_data, model_name):
 
 
 def evaluate_all_models():
-
+    '''
+    Evaluates all chosen model_classes and saves the best model for each class.
+    '''
     np.random.seed(5)
 
     lr_model = tune_regression_model_hyperparameters('LogisticRegression',  X_train_scaled, y_train, 
@@ -195,6 +233,19 @@ def evaluate_all_models():
 
 
 def find_best_model(models_directory):
+    '''
+    Finds the best model from a selection of the best model in each model_class.
+
+    Parameters
+    ----------
+    models_directory: str
+        Directory for the location of the saved best models for each model_class.
+
+    Returns
+    -------
+    best_model: str
+        The name of the best model_class. 
+    '''
     best_model = None
     best_acc = -float('inf')
     best_f1 = float('inf')
